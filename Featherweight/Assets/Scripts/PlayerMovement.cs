@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    
-
     [Header("Movement")]
     public float moveSpeed;
     public float sprintSpeed;
@@ -13,12 +11,16 @@ public class PlayerMovement : MonoBehaviour
     public float groundDrag;
 
     public float dashSpeed;
+    public float dashSpeedChangeFactor;
+
+    public bool gp;
 
     [Header("Jumping")]
     public float jumpForce;
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
+    public float airTime;
 
     [Header("Sliding")]
     public float slideSpeed;
@@ -34,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("GroundCheck")]
     public float playerHeight;
     public LayerMask Ground;
-    bool grounded;
+    public bool grounded;
 
     [Header("SlopeHandling")]
     public float maxSlopeAngle;
@@ -45,20 +47,26 @@ public class PlayerMovement : MonoBehaviour
     public Transform orientation;
     public Transform playerCam;
     Rigidbody rb;
+    ParticleManager pm;
 
     [Header("Dashing")]
     public float dashForce;
     public float dashUpwardForce;
     public float dashDuration;
 
+    [Header("Settings")]
+    public bool allowAllDirections = true;
+    public bool disableGravity = false;
+    public bool resetVel = true;
+
     [Header("Cooldown")]
     public float dashCd;
     private float dashCdTimer;
 
-    float horizontalInput;
-    float verticalInput;
+    public float horizontalInput;
+    public float verticalInput;
 
-    Vector3 moveDirection;
+    public Vector3 moveDirection;
     Vector3 slideDirection;
 
 
@@ -70,6 +78,7 @@ public class PlayerMovement : MonoBehaviour
         sprinting,
         air,
         dashing,
+        gp,
         sliding
     }
 
@@ -79,6 +88,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        pm = GetComponent<ParticleManager>();
         rb.freezeRotation = true;
 
         readyToJump = true;
@@ -96,7 +106,21 @@ public class PlayerMovement : MonoBehaviour
         SpeedControl();
         StateHandler();
 
-        if(dashCdTimer > 0)
+        if (grounded)
+        {
+            airTime = 0;
+        }
+        else
+        {
+            airTime += Time.deltaTime;
+        }
+
+        /*if (airTime >= .5f)
+        {
+            print("Ground pound");
+        }*/
+
+        if (dashCdTimer > 0)
         {
             dashCdTimer -= Time.deltaTime;
         }
@@ -109,6 +133,11 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             rb.drag = 0;
+        }
+
+        if(transform.rotation != Quaternion.Euler(0, 0, 0))
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
 
@@ -142,7 +171,14 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
             rb.AddForce(Vector3.down * 20f, ForceMode.Impulse);
 
-            sliding = true;
+            if (grounded || airTime <= 0.5f)
+            {
+                sliding = true;
+            }
+            else
+            {
+                gp = true;
+            }
         }
 
         if (Input.GetKeyUp(slideKey))
@@ -152,36 +188,109 @@ public class PlayerMovement : MonoBehaviour
             sliding = false;
         }
     }
-
+    private float desiredMoveSpeed;
+    private float lastDesiredMoveSpeed;
+    private MovementState lastState;
+    private bool keepMomentum;
     void StateHandler()
     {
+
         // Mode - Dashing
         if (dashing)
         {
             state = MovementState.dashing;
+            desiredMoveSpeed = dashSpeed;
+            speedChangeFactor = dashSpeedChangeFactor;
         }
 
         // Mode - Sliding
         else if (Input.GetKey(slideKey))
         {
-            state = MovementState.sliding;
+            if (sliding)
+            {
+                state = MovementState.sliding;
+                desiredMoveSpeed = slideSpeed;
+            }
+            else
+            {
+                if (grounded && gp)
+                {
+                    if (rb.velocity.y == 0 || OnSlope())
+                    {
+                        GroundPound();
+                        gp = false;
+                    }
+                }
+                state = MovementState.gp;
+            }
         }
 
         // Mode - Sprinting
         else if (grounded)
         {
             state = MovementState.sprinting;
+            desiredMoveSpeed = sprintSpeed;
         }
 
         // Mode - Air
         else
         {
             state = MovementState.air;
+
+            desiredMoveSpeed = sprintSpeed;
         }
+
+        bool desiredMoveSpeedHasChanged = desiredMoveSpeed != lastDesiredMoveSpeed;
+        if(lastState == MovementState.dashing)
+        {
+            keepMomentum = true;
+        }
+
+        if (desiredMoveSpeedHasChanged)
+        {
+            if (keepMomentum)
+            {
+                StopAllCoroutines();
+                StartCoroutine(SmoothlyLerpMoveSpeed());
+            }
+            else
+            {
+                StopAllCoroutines();
+                moveSpeed = desiredMoveSpeed;
+            }
+        }
+        lastDesiredMoveSpeed = desiredMoveSpeed;
+        lastState = state;
+    }
+
+    private float speedChangeFactor;
+    private IEnumerator SmoothlyLerpMoveSpeed()
+    {
+        //smoothly lerp movement speed to desired value
+        float time = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float startValue = moveSpeed;
+
+        float boostFactor = speedChangeFactor;
+
+        while (time < difference)
+        {
+            moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, time / difference);
+
+            time += Time.deltaTime * boostFactor;
+
+            yield return null;
+        }
+
+        moveSpeed = desiredMoveSpeed;
+        speedChangeFactor = 1f;
+        keepMomentum = false;
     }
 
     private void MovePlayer()
     {
+        if (state == MovementState.dashing) return;
+
         //calculate movement direction
         if (!sliding)
         {
@@ -189,7 +298,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //on slope
-        if (OnSlope() && !exitingSlope)
+        if (OnSlope() && !exitingSlope && state != MovementState.gp)
         {
             rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
 
@@ -200,7 +309,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Applies the force in the direction input
-        if (grounded)
+        if (grounded && state != MovementState.gp)
         {
             if (sliding)
             {
@@ -208,7 +317,6 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
             }
         }
@@ -281,7 +389,18 @@ public class PlayerMovement : MonoBehaviour
 
         dashing = true;
 
-        Vector3 forceToApply = orientation.forward * dashForce + orientation.up * dashUpwardForce;
+        Transform forwardT;
+
+        forwardT = orientation;
+
+        Vector3 direction = GetDirection(forwardT);
+
+        Vector3 forceToApply = direction * dashForce + orientation.up * dashUpwardForce;
+
+        if (disableGravity)
+        {
+            rb.useGravity = true;
+        }
 
         delayedForceToApply = forceToApply;
         Invoke(nameof(DelayedDashForce), 0.025f);
@@ -292,10 +411,44 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 delayedForceToApply;
     private void DelayedDashForce()
     {
+        if (resetVel)
+        {
+            rb.velocity = Vector3.zero;
+        }
+
         rb.AddForce(delayedForceToApply, ForceMode.Impulse);
     }
     private void ResetDash()
     {
         dashing = false;
+    }
+
+    private Vector3 GetDirection(Transform forwardT)
+    {
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        float verticalInput = Input.GetAxisRaw("Vertical");
+
+        Vector3 direction = new Vector3();
+
+        if (allowAllDirections)
+        {
+            direction = forwardT.forward * verticalInput + forwardT.right * horizontalInput;
+        }
+        else
+        {
+            direction = forwardT.forward;
+        }
+
+        if (verticalInput == 0 && horizontalInput == 0)
+        {
+            direction = forwardT.forward;
+        }
+
+        return direction.normalized;
+    }
+
+    private void GroundPound()
+    {
+        pm.GroundPound();
     }
 }
