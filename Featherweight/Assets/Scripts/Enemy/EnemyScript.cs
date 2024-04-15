@@ -8,6 +8,7 @@ public class EnemyScript : MonoBehaviour
     [Header("References")]
     public Transform player;
     private EnemyReferences er;
+    public Transform head;
 
     private float pathUpdateDeadline;
 
@@ -33,22 +34,37 @@ public class EnemyScript : MonoBehaviour
 
             if (inRange)
             {
-                LookAtPlayer();
+                // Makes the enemy move its entire body to face towards the player. This will also be where the enemy starts to punch the player.
+
+                //FacePlayer();
             }
             else
             {
-                UpdatePath();
+                // Makes the enemy move towards the player
+
+                //UpdatePath();
             }
+
+            // Make the enemy look towards the player
+            LookAtPlayer();
         }
         er.anim.SetFloat("speed", er.navMesh.desiredVelocity.sqrMagnitude);
     }
-
-    void LookAtPlayer()
+    void FacePlayer()
     {
         Vector3 lookPos = player.position - transform.position;
         lookPos.y = 0;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
+    }
+
+    // TODO: Make the enemy look towards the player (HEAD ONLY)
+    void LookAtPlayer()
+    {
+        Vector3 lookPos = player.position - transform.position;
+        lookPos.y = 0;
+        Quaternion rotation = Quaternion.LookRotation(lookPos);
+        head.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
     }
 
     void UpdatePath()

@@ -14,7 +14,12 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeedChangeFactor;
 
     public bool gp;
+    public float gpSpeed;
 
+    public Vector3 moveDirection;
+    Vector3 slideDirection;
+
+    public MovementState state;
     [Header("Jumping")]
     public float jumpForce;
     public float jumpCooldown;
@@ -28,10 +33,12 @@ public class PlayerMovement : MonoBehaviour
     private float startYScale;
     public bool sliding;
 
-    [Header("Keybinds")]
+    [Header("Inputs")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode dashKey = KeyCode.LeftShift;
     public KeyCode slideKey = KeyCode.LeftControl;
+    public float horizontalInput;
+    public float verticalInput;
 
     [Header("GroundCheck")]
     public float playerHeight;
@@ -39,7 +46,8 @@ public class PlayerMovement : MonoBehaviour
     public bool grounded;
 
     [Header("SlopeHandling")]
-    public float maxSlopeAngle;
+    float maxSlopeAngle;
+    public float originalMaxSlopeAngle;
     private RaycastHit slopeHit;
     private bool exitingSlope;
 
@@ -48,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
     public Transform playerCam;
     Rigidbody rb;
     ParticleManager pm;
+    Grappling grapple;
 
     [Header("Dashing")]
     public float dashForce;
@@ -63,15 +72,8 @@ public class PlayerMovement : MonoBehaviour
     public float dashCd;
     private float dashCdTimer;
 
-    public float horizontalInput;
-    public float verticalInput;
-
-    public Vector3 moveDirection;
-    Vector3 slideDirection;
-
-
-    public MovementState state;
-
+    [Header("Weight")]
+    public float weight;
 
     public enum MovementState
     {
@@ -89,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<ParticleManager>();
+        grapple = GetComponent<Grappling>();
         rb.freezeRotation = true;
 
         readyToJump = true;
@@ -99,6 +102,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        WeightImpactCalculations();
+
         //ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, Ground);
         
@@ -146,6 +151,22 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
     }
 
+    void WeightImpactCalculations()
+    {
+        // A variable called "weight" just feels a lot simplistic to work with rather than rb.mass
+        weight = rb.mass;
+
+        // The effect of weight on the movement
+        // Slope
+        maxSlopeAngle = originalMaxSlopeAngle / weight;
+
+        // Dash
+        dashCd *= weight;
+
+        // The effect of weight on the grapple
+        grapple.grapplingCd *= weight;
+    }
+
     void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -169,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(slideKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
-            rb.AddForce(Vector3.down * 20f, ForceMode.Impulse);
+            rb.AddForce(Vector3.down * gpSpeed * weight * 2, ForceMode.Impulse);
 
             if (grounded || airTime <= 0.5f)
             {
@@ -313,12 +334,9 @@ public class PlayerMovement : MonoBehaviour
         {
             if (sliding)
             {
-                rb.AddForce(moveDirection.normalized * slideSpeed * 10f, ForceMode.Force);
+                moveSpeed = slideSpeed / weight;
             }
-            else
-            {
-                rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-            }
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
         else if (!grounded)
         {
@@ -335,7 +353,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if(rb.velocity.magnitude > moveSpeed)
             {
-                rb.velocity = rb.velocity.normalized * moveSpeed;
+                rb.velocity = rb.velocity.normalized * moveSpeed / weight;
             }
         }
 

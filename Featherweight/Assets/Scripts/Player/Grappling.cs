@@ -15,13 +15,17 @@ public class Grappling : MonoBehaviour
 
     [Header("Grappling")]
     public float maxGrappleDistance;
+    float currentMaxGrappleDistance;
     public float grappleDelayTime;
 
     public Vector3 grapplePoint;
 
-    public float grappleSpeed;
+    public float savedGrappleSpeed;
+    float grappleSpeed;
 
     public Vector3 direction;
+
+    private bool grappling;
 
     [Header("Cooldown")]
     public float grapplingCd;
@@ -29,19 +33,19 @@ public class Grappling : MonoBehaviour
 
     [Header("Input")]
     public KeyCode grappleKey = KeyCode.Mouse1;
-
     Vector3 moveDirection;
-    private bool grappling;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+
         if (Input.GetKeyDown(grappleKey))
         {
             StartGrappling();
@@ -74,10 +78,12 @@ public class Grappling : MonoBehaviour
     {
         if (grapplingCdTimer > 0) return;
 
+        // Divides the max distance that the player can grapple from by half of the weight.
+        currentMaxGrappleDistance = maxGrappleDistance / (pm.weight / 2);
 
         RaycastHit hit;
         // Fires a raycast from the position of the camera forwards. If it is within the max grapple distance and it is something that can be grappled then the code activates
-        if(Physics.Raycast(cam.position, cam.forward, out hit, maxGrappleDistance, whatIsGrappleable))
+        if(Physics.Raycast(cam.position, cam.forward, out hit, currentMaxGrappleDistance, whatIsGrappleable))
         {
             // Activates what should happen when the point connects correctly
             
@@ -111,8 +117,15 @@ public class Grappling : MonoBehaviour
         direction.Normalize();
 
         // Rotate the grapple to point towards the location that it landed
+        grappleSpeed = savedGrappleSpeed / pm.weight;
+        if (Input.GetKey(pm.jumpKey))
+        {
+            grappleSpeed *= 2;
+        }
 
         rb.AddForce(direction.normalized * grappleSpeed * 10f, ForceMode.Force);
+
+
     }
 
     private void StopGrapple()
