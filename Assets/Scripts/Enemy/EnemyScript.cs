@@ -8,19 +8,36 @@ public class EnemyScript : MonoBehaviour
 {
     [Header("References")]
     public Transform player;
-    private EnemyReferences er;
     public Transform rightHandObj = null;
+    public Transform gunRotation;
+    EnemyReferences er;
+    EnemyHealth eh;
+    Weapon weapon;
+    public Transform cam;
+
+    [Header("Cooldown")]
+    float shootCd;
+    float activeShootCd;
 
     [Header("Animator")]
-    public float headWeight;
-    public float bodyWeight;
 
-    private float pathUpdateDeadline;
+    float pathUpdateDeadline;
 
-    private float shootDis;
+    float shootDis;
+
+    float speed;
+    float acceleration;
+    float animSpeed;
     void Awake()
     {
         er = GetComponent<EnemyReferences>();
+        eh = GetComponent<EnemyHealth>();
+        weapon = GetComponent<Weapon>();
+
+        speed = 7;
+        acceleration = 20;
+        animSpeed = 1;
+        shootCd = 2f;
     }
     // Start is called before the first frame update
     void Start()
@@ -33,25 +50,55 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(player != null)
+        WeightCalculations();
+        Behaviour();
+        Timers();
+    }
+    void Timers()
+    {
+        if (activeShootCd > 0)
+        {
+            activeShootCd -= Time.deltaTime;
+        }
+    }
+    void WeightCalculations()
+    {
+        er.navMesh.speed = speed / eh.weight;
+        er.navMesh.acceleration = acceleration / eh.weight;
+        er.anim.speed = animSpeed / eh.weight/ 1.5f * 2;
+    }
+    void Behaviour()
+    {
+        if (player != null)
         {
             bool inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
 
             if (inRange)
             {
-                // Makes the enemy move its entire body to face towards the player. This will also be where the enemy starts to punch the player.
-
-                FacePlayer();
+                // TODO: Make the enemy punch the player
             }
             else
             {
                 // Makes the enemy move towards the player
-
+                
                 UpdatePath();
+            }
+
+            if (er.anim.GetFloat("speed") == 0)
+            {
+                FacePlayer();
+            }
+
+            if (!weapon.shooting && activeShootCd == 0)
+            {
+                activeShootCd = shootCd;
+                weapon.shooting = true;
+                er.anim.SetTrigger("shoot");
             }
         }
         er.anim.SetFloat("speed", er.navMesh.desiredVelocity.sqrMagnitude);
     }
+
     void FacePlayer()
     {
         Vector3 lookPos = player.position - transform.position;
@@ -62,12 +109,20 @@ public class EnemyScript : MonoBehaviour
     void OnAnimatorIK(int layerIndex)
     {
         er.anim.SetLookAtPosition(player.position);
-        er.anim.SetLookAtWeight(1, bodyWeight, headWeight);
+        er.anim.SetLookAtWeight(1, 0, 1); // Second value is the body weight, third value is the head weight (if = 1 then it moves)
 
         er.anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
         er.anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
         er.anim.SetIKPosition(AvatarIKGoal.RightHand, rightHandObj.position);
         er.anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandObj.rotation);
+
+        if (!weapon.shooting)
+        {
+            Vector3 lookPos = player.position - transform.position;
+            lookPos.y -= 1.6f;
+            Quaternion rotation = Quaternion.LookRotation(lookPos);
+            gunRotation.rotation = Quaternion.Slerp(gunRotation.rotation, rotation, 0.2f);
+        }
     }
 
     void UpdatePath()

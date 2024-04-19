@@ -5,8 +5,8 @@ using UnityEngine;
 public class Grappling : MonoBehaviour
 {
     [Header("References")]
-    private PlayerMovement pm;
-    private Rigidbody rb;
+    PlayerMovement pm;
+    Rigidbody rb;
     public Transform cam;
     public Transform gunTip;
     public LayerMask whatIsGrappleable;
