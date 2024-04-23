@@ -6,7 +6,11 @@ public class Grappling : MonoBehaviour
 {
     [Header("References")]
     PlayerMovement pm;
+    public EnemyScript enemyScript;
+    EnemyHealth enemyHealth;
     Rigidbody rb;
+    GameObject hitEnemy;
+    public Vector3 grappledFrom;
     public Transform cam;
     public Transform gunTip;
     public LayerMask whatIsGrappleable;
@@ -17,6 +21,10 @@ public class Grappling : MonoBehaviour
     public float maxGrappleDistance;
     float currentMaxGrappleDistance;
     public float grappleDelayTime;
+
+    RaycastHit hit;
+
+    bool enemyGrappled;
 
     public Vector3 grapplePoint;
 
@@ -39,7 +47,7 @@ public class Grappling : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
-        
+        enemyScript = null;
     }
 
     // Update is called once per frame
@@ -62,7 +70,20 @@ public class Grappling : MonoBehaviour
 
         if (grappling)
         {
+            lr.SetPosition(1, grapplePoint);
+        }
+        if (grappling && !enemyGrappled)
+        {
             ExecuteGrapple();
+        }
+        else
+        {
+            if(enemyScript != null)
+            {
+                enemyScript.GrappleTowardsPlayer();
+                grapplePoint = hitEnemy.transform.position;
+                
+            }
         }
     }
 
@@ -81,7 +102,6 @@ public class Grappling : MonoBehaviour
         // Divides the max distance that the player can grapple from by half of the weight.
         currentMaxGrappleDistance = maxGrappleDistance / (pm.weight / 2);
 
-        RaycastHit hit;
         // Fires a raycast from the position of the camera forwards. If it is within the max grapple distance and it is something that can be grappled then the code activates
         if(Physics.Raycast(cam.position, cam.forward, out hit, currentMaxGrappleDistance, whatIsGrappleable))
         {
@@ -95,8 +115,36 @@ public class Grappling : MonoBehaviour
             lr.enabled = true;
             lr.SetPosition(1, grapplePoint);
 
-            // Plays the grapple
-            Invoke(nameof(ExecuteGrapple), grappleDelayTime);
+            // Checks if the enemy is what the grapple has hit
+            if(hit.collider.gameObject.CompareTag("head") || hit.collider.gameObject.CompareTag("body"))
+            {
+                enemyGrappled = true;
+
+                hitEnemy = hit.collider.gameObject;
+                enemyHealth = hitEnemy.GetComponentInParent<EnemyHealth>();
+                enemyScript = hitEnemy.GetComponentInParent<EnemyScript>();
+                // Compares the two weight values of the enemy and the player
+                if (enemyHealth.weight > pm.weight)
+                {
+                    Debug.Log("Enemy is lighter than the player");
+                    // Grapples the enemy towards the player
+                    grappledFrom = hitEnemy.transform.position;
+
+                    enemyScript.GrappleTowardsPlayer();
+                }
+                else
+                {
+                    // Grapples player towards the enemy
+                    Invoke(nameof(ExecuteGrapple), grappleDelayTime);
+                }
+            }
+            else
+            {
+                enemyGrappled = false;
+                // Plays the grapple
+                Invoke(nameof(ExecuteGrapple), grappleDelayTime);
+            }
+
         }
         else
         {
@@ -130,5 +178,7 @@ public class Grappling : MonoBehaviour
         grapplingCdTimer = grapplingCd;
 
         lr.enabled = false;
+
+        enemyGrappled = false;
     }
 }

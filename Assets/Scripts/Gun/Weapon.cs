@@ -99,8 +99,6 @@ public class Weapon : MonoBehaviour
     public void Shoot()
     {
 
-        Debug.Log("Shoot");
-
         ShootingSystem.Play();
         Vector3 direction = GetDirection(cam);
 
@@ -125,7 +123,6 @@ public class Weapon : MonoBehaviour
     }
     Vector3 GetDirection(Transform cam)
     {
-        Debug.Log("Direction");
         Vector3 direction = cam.forward;
 
         if (AddBulletSpread)

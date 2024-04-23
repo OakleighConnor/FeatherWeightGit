@@ -12,7 +12,9 @@ public class EnemyScript : MonoBehaviour
     public Transform gunRotation;
     EnemyReferences er;
     EnemyHealth eh;
+    Grappling grapple;
     Weapon weapon;
+    Rigidbody rb;
     public Transform cam;
 
     [Header("Cooldown")]
@@ -28,11 +30,18 @@ public class EnemyScript : MonoBehaviour
     float speed;
     float acceleration;
     float animSpeed;
+
+    [Header("Grappling")]
+    public float savedGrappleSpeed;
+    float grappleSpeed;
+    bool grappled;
     void Awake()
     {
+        rb = GetComponent<Rigidbody>();
         er = GetComponent<EnemyReferences>();
         eh = GetComponent<EnemyHealth>();
         weapon = GetComponent<Weapon>();
+        grapple = GetComponent<Grappling>();
 
         speed = 7;
         acceleration = 20;
@@ -45,14 +54,18 @@ public class EnemyScript : MonoBehaviour
         // Determines the distance that the enemy is able to shoot
         // TODO: Make the enemy shoot
         shootDis = er.navMesh.stoppingDistance;
+        grappled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         WeightCalculations();
-        Behaviour();
-        Timers();
+        if (er.navMesh.enabled)
+        {
+            Behaviour();
+            Timers();
+        }
     }
     void Timers()
     {
@@ -133,5 +146,20 @@ public class EnemyScript : MonoBehaviour
             pathUpdateDeadline = Time.time + er.pathUpdateDelay;
             er.navMesh.SetDestination(player.position);
         }
+    }
+    public void GrappleTowardsPlayer()
+    {
+        Debug.Log("enemy is lighter than the player");
+
+        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        er.navMesh.enabled = false;
+
+        Vector3 direction = transform.position - player.transform.position;
+        direction.Normalize();
+
+        // Rotate the grapple to point towards the location that it landed
+        grappleSpeed = savedGrappleSpeed;
+
+        rb.AddForce(direction.normalized * grappleSpeed * 10f, ForceMode.Force);
     }
 }
