@@ -32,9 +32,7 @@ public class Weapon : MonoBehaviour
 
     [Header("Damage")]
     float pistolDamage = 25;
-    bool headshot;
 
-    public bool shooting;
    
     [Header("Inptus")]
     public KeyCode primaryKey = KeyCode.Mouse0;
@@ -57,7 +55,6 @@ public class Weapon : MonoBehaviour
 
         weapon = WeaponOut.gun;
         AddBulletSpread = false;
-        shooting = false;
     }
 
     // Update is called once per frame
@@ -98,7 +95,6 @@ public class Weapon : MonoBehaviour
     }
     public void Shoot()
     {
-
         ShootingSystem.Play();
         Vector3 direction = GetDirection(cam);
 
@@ -152,17 +148,10 @@ public class Weapon : MonoBehaviour
 
         if (hit != null)
         {
-            if (hit.CompareTag("head"))
+            if (hit.CompareTag("enemy"))
             {
-                headshot = true;
                 enemyHealth = hit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(DamagePlayerDealt(headshot, pistolDamage), knockback);
-            }
-            else if (hit.CompareTag("body"))
-            {
-                headshot = false;
-                enemyHealth = hit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(DamagePlayerDealt(headshot, pistolDamage), knockback);
+                enemyHealth.Hit(DamagePlayerDealt(pistolDamage), knockback);
             }
             else if (hit.CompareTag("Player"))
             {
@@ -178,21 +167,13 @@ public class Weapon : MonoBehaviour
         Destroy(trail.gameObject, trail.time);
     }
 
-    float DamagePlayerDealt(bool headshot, float damage)
+    float DamagePlayerDealt(float damage)
     {
         if (pm.weight > enemyHealth.weight)
         {
             damage /= 4;
         }
-        if (headshot)
-        {
-            damage *= 2;
-        }
         return damage;
     }
 
-    public void ResetGun()
-    {
-        shooting = false;
-    }
 }

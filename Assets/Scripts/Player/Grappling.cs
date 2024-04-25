@@ -24,7 +24,7 @@ public class Grappling : MonoBehaviour
 
     RaycastHit hit;
 
-    bool enemyGrappled;
+    public bool enemyGrappled;
 
     public Vector3 grapplePoint;
 
@@ -71,20 +71,25 @@ public class Grappling : MonoBehaviour
         if (grappling)
         {
             lr.SetPosition(1, grapplePoint);
-        }
-        if (grappling && !enemyGrappled)
-        {
-            ExecuteGrapple();
-        }
-        else
-        {
             if(enemyScript != null)
             {
-                enemyScript.GrappleTowardsPlayer();
-                grapplePoint = hitEnemy.transform.position;
-                
+                if (enemyGrappled)
+                {
+                    enemyScript.grappled = true;
+                    grapplePoint = hitEnemy.transform.position;
+                }
+                else
+                {
+                    enemyScript.grappled = false;
+                    ExecuteGrapple();
+                }
+            }
+            else
+            {
+                ExecuteGrapple();
             }
         }
+        
     }
 
     void LateUpdate()
@@ -116,7 +121,7 @@ public class Grappling : MonoBehaviour
             lr.SetPosition(1, grapplePoint);
 
             // Checks if the enemy is what the grapple has hit
-            if(hit.collider.gameObject.CompareTag("head") || hit.collider.gameObject.CompareTag("body"))
+            if(hit.collider.gameObject.CompareTag("enemy"))
             {
                 enemyGrappled = true;
 
@@ -128,9 +133,9 @@ public class Grappling : MonoBehaviour
                 {
                     Debug.Log("Enemy is lighter than the player");
                     // Grapples the enemy towards the player
-                    grappledFrom = hitEnemy.transform.position;
-
-                    enemyScript.GrappleTowardsPlayer();
+                    enemyGrappled = true;
+                    grapplePoint = hitEnemy.transform.position;
+                    enemyScript.rb.velocity = new Vector3(0f, 0f, 0f);
                 }
                 else
                 {
@@ -171,7 +176,7 @@ public class Grappling : MonoBehaviour
 
     }
 
-    private void StopGrapple()
+    public void StopGrapple()
     {
         grappling = false;
 
@@ -180,5 +185,14 @@ public class Grappling : MonoBehaviour
         lr.enabled = false;
 
         enemyGrappled = false;
+
+        if(enemyScript != null)
+        {
+            enemyScript.StopGrappling();
+        }
+
+        hitEnemy = null;
+        enemyHealth = null;
+        enemyScript = null;
     }
 }

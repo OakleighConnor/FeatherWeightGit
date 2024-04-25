@@ -6,6 +6,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Animator))]
 public class EnemyScript : MonoBehaviour
 {
+    bool inRange;
+
     [Header("References")]
     public Transform player;
     public Transform rightHandObj = null;
@@ -13,40 +15,50 @@ public class EnemyScript : MonoBehaviour
     EnemyReferences er;
     EnemyHealth eh;
     Grappling grapple;
-    Weapon weapon;
-    Rigidbody rb;
+    [HideInInspector] public Rigidbody rb;
     public Transform cam;
 
     [Header("Cooldown")]
     float shootCd;
-    float activeShootCd;
+    public float activeShootCd;
 
     [Header("Animator")]
 
     float pathUpdateDeadline;
-
+    float animationSpeed = 1;
     float shootDis;
 
     float speed;
     float acceleration;
-    float animSpeed;
 
     [Header("Grappling")]
     public float savedGrappleSpeed;
     float grappleSpeed;
-    bool grappled;
+    public bool grappled;
+
+    [Header("GroundCheck")]
+    public float enemyHeight;
+    public LayerMask Ground;
+    public bool grounded;
+
+    public MovementState state;
+    public enum MovementState
+    {
+        shooting,
+        punching,
+        grappled,
+        falling
+    }
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         er = GetComponent<EnemyReferences>();
         eh = GetComponent<EnemyHealth>();
-        weapon = GetComponent<Weapon>();
-        grapple = GetComponent<Grappling>();
+        grapple = player.GetComponent<Grappling>();
 
         speed = 7;
         acceleration = 20;
-        animSpeed = 1;
-        shootCd = 2f;
+        shootCd = 1.2f;
     }
     // Start is called before the first frame update
     void Start()
@@ -60,53 +72,91 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Ground check
+        grounded = Physics.Raycast(transform.position, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
+
         WeightCalculations();
-        if (er.navMesh.enabled)
+        StateManager();
+        Behaviour();
+        
+    }
+    void Behaviour()
+    {
+        if (state == MovementState.shooting)
         {
-            Behaviour();
-            Timers();
+            UpdatePath();
+            Shooting();
+        }
+        else if (state == MovementState.punching)
+        {
+            FacePlayer();
+        }
+        else if (state == MovementState.grappled)
+        {
+            GrappleTowardsPlayer();
+        }
+        else
+        {
+            Fall();
+        }
+
+        if (state == MovementState.grappled || state == MovementState.falling)
+        {
+            er.navMesh.enabled = false;
+        }
+        else if (grounded)
+        {
+            er.navMesh.enabled = true;
         }
     }
-    void Timers()
+    void Fall()
     {
-        if (activeShootCd > 0)
+
+    }
+    void Shooting()
+    {
+        // Start shooting
+        if (activeShootCd <= 0)
+        {
+            er.anim.SetTrigger("shoot");
+            activeShootCd = shootCd * eh.weight;
+        }
+        else
         {
             activeShootCd -= Time.deltaTime;
         }
     }
+
     void WeightCalculations()
     {
         er.navMesh.speed = speed / eh.weight;
         er.navMesh.acceleration = acceleration / eh.weight;
-        er.anim.speed = animSpeed / eh.weight/ 1.5f * 2;
+        er.anim.speed = animationSpeed / eh.weight/ 1.5f * 2;
+        rb.mass = eh.weight;
     }
-    void Behaviour()
+    void StateManager()
     {
         if (player != null)
         {
-            bool inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
+            inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
 
-            if (inRange)
+            if (grappled)
             {
-                // TODO: Make the enemy punch the player
+                state = MovementState.grappled;
+            }
+            else if (!grounded)
+            {
+                state = MovementState.falling;
+            }
+            else if (inRange)
+            {
+                state = MovementState.punching;
             }
             else
             {
                 // Makes the enemy move towards the player
                 
-                UpdatePath();
-            }
-
-            if (er.anim.GetFloat("speed") == 0)
-            {
-                FacePlayer();
-            }
-
-            if (!weapon.shooting && activeShootCd == 0)
-            {
-                activeShootCd = shootCd;
-                weapon.shooting = true;
-                er.anim.SetTrigger("shoot");
+                state = MovementState.shooting;
             }
         }
         er.anim.SetFloat("speed", er.navMesh.desiredVelocity.sqrMagnitude);
@@ -128,18 +178,12 @@ public class EnemyScript : MonoBehaviour
         er.anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
         er.anim.SetIKPosition(AvatarIKGoal.RightHand, rightHandObj.position);
         er.anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandObj.rotation);
-
-        if (!weapon.shooting)
-        {
-            Vector3 lookPos = player.position - transform.position;
-            lookPos.y -= 1.6f;
-            Quaternion rotation = Quaternion.LookRotation(lookPos);
-            gunRotation.rotation = Quaternion.Slerp(gunRotation.rotation, rotation, 0.2f);
-        }
     }
 
     void UpdatePath()
     {
+        if (er.navMesh.enabled == false) return;
+
         if ( Time.time >= pathUpdateDeadline)
         {
             Debug.Log("Updating Path");
@@ -151,15 +195,31 @@ public class EnemyScript : MonoBehaviour
     {
         Debug.Log("enemy is lighter than the player");
 
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        er.navMesh.enabled = false;
-
-        Vector3 direction = transform.position - player.transform.position;
+        Vector3 direction = player.position - transform.position;
         direction.Normalize();
 
-        // Rotate the grapple to point towards the location that it landed
         grappleSpeed = savedGrappleSpeed;
 
-        rb.AddForce(direction.normalized * grappleSpeed * 10f, ForceMode.Force);
+        if (rb.velocity.magnitude > grappleSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * grappleSpeed;
+        }
+        rb.AddForce(direction * grappleSpeed * 10f, ForceMode.Force);
+        rb.freezeRotation = false;
+
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
+        rb.freezeRotation = true;
+
+        if (inRange)
+        {
+            grapple.StopGrapple();
+        }
+    }
+
+
+    public void StopGrappling()
+    {
+        grappled = false;
     }
 }

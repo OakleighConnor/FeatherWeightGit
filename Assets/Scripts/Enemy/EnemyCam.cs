@@ -16,15 +16,13 @@ public class EnemyCam : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!weapon.shooting)
-        {
-            FacePlayer();
-        }
+        FacePlayer();
     }
 
     void FacePlayer()
     {
         Vector3 lookPos = player.position - transform.position;
+        lookPos.y -= 1;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
     }
