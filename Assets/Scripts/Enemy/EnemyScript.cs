@@ -140,6 +140,11 @@ public class EnemyScript : MonoBehaviour
         {
             inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
 
+            if(rb.velocity.magnitude == 0)
+            {
+                grappled = false;
+            }
+
             if (grappled)
             {
                 state = MovementState.grappled;
