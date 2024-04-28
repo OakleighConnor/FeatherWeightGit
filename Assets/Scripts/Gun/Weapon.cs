@@ -21,22 +21,38 @@ public class Weapon : MonoBehaviour
 
     [Header("References")]
     PlayerMovement pm;
+    Animator anim;
     public ParticleSystem ShootingSystem;
     public Transform BulletShootPoint;
     public ParticleSystem ImpactSystem;
     public Transform cam;
     EnemyHealth enemyHealth;
     GameObject objectHit;
+    public GameObject weapons;
+    public GameObject gun;
+
+    [Header("Fist")]
+    public GameObject fist;
+    public Transform fistDamagePoint;
+    public float fistDistance = 1;
+    public float damageOffset;
+    public bool fistHitbox;
+
     public bool player;
+    public float xOffset;
 
 
     [Header("Damage")]
     float pistolDamage = 25;
+    float fistDamage = 25;
 
-   
+
     [Header("Inptus")]
+
     public KeyCode primaryKey = KeyCode.Mouse0;
     public KeyCode secondaryKey = KeyCode.Mouse1;
+    public float scrollWheel;
+    public float weaponValue;
 
     [Header("Weapons")]
 
@@ -45,7 +61,7 @@ public class Weapon : MonoBehaviour
     {
         gun,
         fist,
-        scrapo
+        scrap
     }
 
     // Start is called before the first frame update
@@ -53,34 +69,90 @@ public class Weapon : MonoBehaviour
     {
         pm = GetComponent<PlayerMovement>();
 
+        if(weapons != null)
+        {
+            anim = weapons.GetComponent<Animator>();
+        }
+
         weapon = WeaponOut.gun;
         AddBulletSpread = false;
+        knockback = false;
     }
 
     // Update is called once per frame
     void Update()
     {
 
+        
         if (player)
         {
             Inputs();
             Weapons();
+            Attacks();
         }
     }
-
-   
+    void Attacks()
+    {
+        if (fistHitbox)
+        {
+            FistHitbox();
+        }
+    }
     void Weapons()
     {
-        if (weapon == WeaponOut.gun)
+        // Gun
+        if (weaponValue == 1)
         {
-            knockback = false;
+            weapon = WeaponOut.gun;
+            gun.SetActive(true);
+            
+            // Disabling other weapons
+            fist.SetActive(false);
+            // scrap.SetActive(false);
+        }
+
+        // Fist
+        if (weaponValue == 2)
+        {
+            weapon = WeaponOut.fist;
+            fist.SetActive(true);
+
+            // Disabling other weapons
+            gun.SetActive(false);
+            // scrap.SetActive(false);
+        }
+
+        // Scrap
+        if (weaponValue == 3)
+        {
+            weapon = WeaponOut.scrap;
+            // scrap.SetActive(true);
+
+            // Disabling the other weapons
+            gun.SetActive(false);
+            fist.SetActive(false);
         }
     }
 
     void Inputs()
     {
-        
-        // Primary weapons :
+        // Scroll wheel input :
+
+        weaponValue += Input.mouseScrollDelta.y;
+
+        // Checks if weaponValue has ascended out of the range that it is given
+        // If so then it loops the values
+
+        if(weaponValue >= 4) // One higher than the highest possible value
+        {
+            weaponValue = 1;
+        }
+        else if (weaponValue <= 0) // One lower than the lowest possible value
+        {
+            weaponValue = 3;
+        }
+
+        // Primary weapon input :
 
         if (Input.GetKeyDown(primaryKey))
         {
@@ -88,11 +160,57 @@ public class Weapon : MonoBehaviour
             {
                 Shoot();
             }
+            else if (weapon == WeaponOut.fist)
+            {
+                Punch();
+            }
         }
 
         // Secondary weapons :
 
     }
+
+    public void Punch()
+    {
+        anim.SetTrigger("punch");
+    }
+
+    public void FistHitbox()
+    {
+        Vector3 direction = GetDirection(cam);
+
+        if (Physics.Raycast(fistDamagePoint.position, direction + new Vector3(0.3f, 0, 0), out RaycastHit hit1, fistDistance, shootable))
+        {
+            objectHit = hit1.collider.gameObject;
+        }
+        else if (Physics.Raycast(fistDamagePoint.position, direction, out RaycastHit hit2, fistDistance, shootable))
+        {
+            objectHit = hit2.collider.gameObject;
+        }
+        else if (Physics.Raycast(fistDamagePoint.position, direction + new Vector3(-0.3f, 0, 0), out RaycastHit hit3, fistDistance, shootable))
+        {
+            objectHit = hit3.collider.gameObject;
+        }
+        else
+        {
+            objectHit = null;
+        }
+
+        Debug.DrawRay(fistDamagePoint.position, direction * fistDistance, Color.green, 3);
+        Debug.DrawRay(fistDamagePoint.position, direction + new Vector3(0.3f, 0, 0) * fistDistance, Color.red, 3);
+        Debug.DrawRay(fistDamagePoint.position, direction + new Vector3(-0.3f, 0, 0) * fistDistance, Color.blue, 3);
+
+        if (objectHit != null)
+        {
+            if (objectHit.CompareTag("enemy"))
+            {
+                fistHitbox = false;
+                enemyHealth = objectHit.GetComponentInParent<EnemyHealth>();
+                enemyHealth.Hit(DamagePlayerDealt(fistDamage, 2), knockback);
+            }
+        }
+    }
+
     public void Shoot()
     {
         ShootingSystem.Play();
@@ -151,7 +269,7 @@ public class Weapon : MonoBehaviour
             if (hit.CompareTag("enemy"))
             {
                 enemyHealth = hit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(DamagePlayerDealt(pistolDamage), knockback);
+                enemyHealth.Hit(DamagePlayerDealt(pistolDamage, 1), knockback);
             }
             else if (hit.CompareTag("Player"))
             {
@@ -167,11 +285,29 @@ public class Weapon : MonoBehaviour
         Destroy(trail.gameObject, trail.time);
     }
 
-    float DamagePlayerDealt(float damage)
+    float DamagePlayerDealt(float damage, float weapon)
     {
+        // gun = 1 fist = 2 scrap = 3
+
+        // If the player is heavier than the enemy
+        if(weapon == 2)
+        {
+            Debug.Log("fist");
+        }
         if (pm.weight > enemyHealth.weight)
         {
-            damage /= 4;
+            if(weapon == 1)
+            {
+                // Decrease gun damage
+                damage /= 4;
+            }
+            else if (weapon == 2)
+            {
+                Debug.Log("knockback!");
+                // Increase fist damage and make it apply the knockback
+                damage *= 2;
+                knockback = true;
+            }
         }
         return damage;
     }

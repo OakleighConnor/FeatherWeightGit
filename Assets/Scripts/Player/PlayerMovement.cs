@@ -470,4 +470,18 @@ public class PlayerMovement : MonoBehaviour
     {
         pm.GroundPound();
     }
+
+    public void Knockback()
+    {
+        grapple.StopGrapple();
+
+        rb.velocity = new Vector3(0, 0, 0);
+
+        Debug.Log("player knocked back");
+
+        Vector3 direction = -playerCam.forward;
+        direction.Normalize();
+
+        rb.AddForce(direction * 40, ForceMode.Impulse);
+    }
 }

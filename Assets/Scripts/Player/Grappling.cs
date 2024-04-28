@@ -6,7 +6,7 @@ public class Grappling : MonoBehaviour
 {
     [Header("References")]
     PlayerMovement pm;
-    public EnemyScript enemyScript;
+    EnemyScript enemyScript;
     EnemyHealth enemyHealth;
     Rigidbody rb;
     GameObject hitEnemy;
@@ -21,23 +21,17 @@ public class Grappling : MonoBehaviour
     public float maxGrappleDistance;
     float currentMaxGrappleDistance;
     public float grappleDelayTime;
-
     RaycastHit hit;
-
-    public bool enemyGrappled;
-
-    public Vector3 grapplePoint;
-
+    bool enemyGrappled;
+    Vector3 grapplePoint;
     public float savedGrappleSpeed;
-    public float grappleSpeed;
-
+    float grappleSpeed;
     public Vector3 direction;
+    bool grappling;
 
-    private bool grappling;
-
-    [Header("Cooldown")]
+    [Header("Timers")]
     public float grapplingCd;
-    private float grapplingCdTimer;
+    public float grapplingCdTimer;
 
     [Header("Input")]
     public KeyCode grappleKey = KeyCode.Mouse1;
@@ -75,8 +69,16 @@ public class Grappling : MonoBehaviour
             {
                 if (enemyGrappled)
                 {
-                    enemyScript.grappled = true;
                     grapplePoint = hitEnemy.transform.position;
+                    if (enemyHealth.weight < pm.weight)
+                    {
+                        enemyScript.grappled = true;
+                    }
+                    else
+                    {
+                        enemyScript.grappled = false;
+                        ExecuteGrapple();
+                    }
                 }
                 else
                 {
@@ -129,11 +131,10 @@ public class Grappling : MonoBehaviour
                 enemyHealth = hitEnemy.GetComponentInParent<EnemyHealth>();
                 enemyScript = hitEnemy.GetComponentInParent<EnemyScript>();
                 // Compares the two weight values of the enemy and the player
-                if (enemyHealth.weight > pm.weight)
+                if (enemyHealth.weight < pm.weight)
                 {
                     Debug.Log("Enemy is lighter than the player");
                     // Grapples the enemy towards the player
-                    enemyGrappled = true;
                     grapplePoint = hitEnemy.transform.position;
                     enemyScript.rb.velocity = new Vector3(0f, 0f, 0f);
                 }

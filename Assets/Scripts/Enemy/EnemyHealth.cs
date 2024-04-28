@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
+    [Header("References")]
+    EnemyScript enemyScript;
+    public PlayerMovement pm;
+    
     // The total max health of the common enemies will be the same as the player (250)
     // The weight of the enemies will be directly proportional to the health.
     // 1 health = 0.5 mass, 250 health = 3 mass
     [Header("Health")]
     public float weight;
     public float health;
+    public bool kb;
+    
     // Start is called before the first frame update
     void Start()
     {
+        enemyScript = GetComponent<EnemyScript>();
         health = Random.Range(50, 250);
+        kb = false;
     }
 
     // Update is called once per frame
@@ -26,29 +34,32 @@ public class EnemyHealth : MonoBehaviour
 
     public void Hit(float damageTaken, bool knockback)
     {
+        kb = knockback;
+
         //Debug.Log("Enemy has taken damage!");
         health -= damageTaken;
         //Debug.Log("Enemy took " + damageTaken + " damage");
         //Debug.Log("Enemy has " + health + " health remaining");
 
-        if (health <= 0)
+        if (kb)
         {
-            Death(knockback);
+            enemyScript.state = EnemyScript.MovementState.knockback;
+            enemyScript.Knockback();
+        }
+        else if (health <= 0)
+        {
+            Death();
+        }
+
+        if (!kb)
+        {
+            pm.Knockback();
         }
     }
 
-    public void Death(bool knockback)
+    public void Death()
     {
-        //Debug.Log("The enemy has died");
-        if (knockback)
-        {
-            // Start a coroutine that knocks the enemy backwards until it hits something
-            // This coroutine will be used for normal knockback + death knockback, they will work differently
-
-
-
-        } 
-        else
+        if (!kb)
         {
             Explode();
         }

@@ -17,6 +17,8 @@ public class EnemyScript : MonoBehaviour
     Grappling grapple;
     [HideInInspector] public Rigidbody rb;
     public Transform cam;
+    public Transform playerCam;
+    public LayerMask ground;
 
     [Header("Cooldown")]
     float shootCd;
@@ -40,6 +42,7 @@ public class EnemyScript : MonoBehaviour
     public float enemyHeight;
     public LayerMask Ground;
     public bool grounded;
+    Vector3 enemyFeet;
 
     public MovementState state;
     public enum MovementState
@@ -47,7 +50,8 @@ public class EnemyScript : MonoBehaviour
         shooting,
         punching,
         grappled,
-        falling
+        falling,
+        knockback
     }
     void Awake()
     {
@@ -73,12 +77,28 @@ public class EnemyScript : MonoBehaviour
     void Update()
     {
         // Ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
+        enemyFeet = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
+        grounded = Physics.Raycast(enemyFeet, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
+        Debug.DrawRay(enemyFeet, Vector3.down * enemyHeight, Color.green);
 
-        WeightCalculations();
-        StateManager();
-        Behaviour();
-        
+        if (eh.health > 0)
+        {
+            if (state != MovementState.knockback)
+            {
+                WeightCalculations();
+                StateManager();
+                Behaviour();
+            }
+            else if (grounded)
+            {
+                state = MovementState.shooting;
+            }
+        }
+        else if (state == MovementState.falling)
+        {
+            Debug.Log("death");
+            eh.Death();
+        }
     }
     void Behaviour()
     {
@@ -95,12 +115,8 @@ public class EnemyScript : MonoBehaviour
         {
             GrappleTowardsPlayer();
         }
-        else
-        {
-            Fall();
-        }
 
-        if (state == MovementState.grappled || state == MovementState.falling)
+        if (state == MovementState.grappled || state == MovementState.falling || state == MovementState.knockback)
         {
             er.navMesh.enabled = false;
         }
@@ -109,9 +125,29 @@ public class EnemyScript : MonoBehaviour
             er.navMesh.enabled = true;
         }
     }
-    void Fall()
-    {
 
+    public void Knockback()
+    {
+        rb.velocity = new Vector3(0, 0, 0);
+        er.navMesh.enabled = false;
+
+        Debug.Log("knocking backwards the enemy");
+
+        Vector3 direction = playerCam.forward;
+        direction.Normalize();
+
+        rb.AddForce(direction * 30, ForceMode.Impulse);
+
+        Quaternion rotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
+        rb.freezeRotation = true;
+
+        eh.kb = false;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        state = MovementState.falling;
     }
     void Shooting()
     {
@@ -187,6 +223,8 @@ public class EnemyScript : MonoBehaviour
 
     void UpdatePath()
     {
+        rb.velocity = new Vector3(0,0,0);
+
         if (er.navMesh.enabled == false) return;
 
         if ( Time.time >= pathUpdateDeadline)
@@ -221,8 +259,6 @@ public class EnemyScript : MonoBehaviour
             grapple.StopGrapple();
         }
     }
-
-
     public void StopGrappling()
     {
         grappled = false;
