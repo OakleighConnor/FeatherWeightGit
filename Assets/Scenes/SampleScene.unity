@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2720,15 +2720,17 @@ MonoBehaviour:
   gun: {fileID: 919132148283538137}
   fist: {fileID: 919132147891252883}
   fistDamagePoint: {fileID: 925457800}
-  fistDistance: 2
+  fistDistance: 2.5
   damageOffset: 0
   fistHitbox: 0
+  playerKnockback: 0
   player: 1
   xOffset: 0
   primaryKey: 323
   secondaryKey: 324
   scrollWheel: 0
   weaponValue: 0
+  attacking: 0
   weapon: 0
 --- !u!1 &2101185140
 GameObject:

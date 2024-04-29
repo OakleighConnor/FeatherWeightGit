@@ -53,6 +53,7 @@ public class Weapon : MonoBehaviour
     public KeyCode secondaryKey = KeyCode.Mouse1;
     public float scrollWheel;
     public float weaponValue;
+    public bool attacking;
 
     [Header("Weapons")]
 
@@ -77,6 +78,7 @@ public class Weapon : MonoBehaviour
         weapon = WeaponOut.gun;
         AddBulletSpread = false;
         knockback = false;
+        attacking = false;
     }
 
     // Update is called once per frame
@@ -85,6 +87,10 @@ public class Weapon : MonoBehaviour
 
         if (player)
         {
+            if (!attacking)
+            {
+                Inputs();
+            }
             Inputs();
             Weapons();
             Attacks();
@@ -158,10 +164,12 @@ public class Weapon : MonoBehaviour
             if(weapon == WeaponOut.gun)
             {
                 Shoot();
+                attacking = true;
             }
             else if (weapon == WeaponOut.fist)
             {
                 Punch();
+                attacking = true;
             }
         }
 
@@ -172,6 +180,7 @@ public class Weapon : MonoBehaviour
     public void Punch()
     {
         anim.SetTrigger("punch");
+
     }
 
     public void FistHitbox()

@@ -7,17 +7,6 @@ public class PlayerAnimControl : MonoBehaviour
 
     [Header("References")]
     public Weapon weapon;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void PunchHitboxBegin()
     {
@@ -27,5 +16,10 @@ public class PlayerAnimControl : MonoBehaviour
     public void PunchHitboxStop()
     {
         weapon.fistHitbox = false;
+    }
+
+    public void ResetAttack()
+    {
+        weapon.attacking = false;
     }
 }

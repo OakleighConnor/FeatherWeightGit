@@ -65,8 +65,6 @@ public class Grappling : MonoBehaviour
 
         if (grappling)
         {
-            weapon.fistDistance = 2.5f;
-
             lr.SetPosition(1, grapplePoint);
             if(enemyScript != null)
             {
@@ -96,10 +94,6 @@ public class Grappling : MonoBehaviour
                 ExecuteGrapple();
                 grappleSpeed = savedGrappleSpeed;
             }
-        }
-        else
-        {
-            weapon.fistDistance = 2;
         }
     }
 
@@ -159,7 +153,6 @@ public class Grappling : MonoBehaviour
                 // Plays the grapple
                 Invoke(nameof(ExecuteGrapple), grappleDelayTime);
             }
-
         }
         else
         {
