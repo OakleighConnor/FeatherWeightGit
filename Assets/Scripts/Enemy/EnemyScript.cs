@@ -168,8 +168,10 @@ public class EnemyScript : MonoBehaviour
         er.navMesh.speed = speed / eh.weight;
         er.navMesh.acceleration = acceleration / eh.weight;
         er.anim.speed = animationSpeed / eh.weight/ 1.5f * 2;
+        grappleSpeed = savedGrappleSpeed;
         rb.mass = eh.weight;
     }
+
     void StateManager()
     {
         if (player != null)
@@ -241,8 +243,6 @@ public class EnemyScript : MonoBehaviour
         Vector3 direction = player.position - transform.position;
         direction.Normalize();
 
-        grappleSpeed = savedGrappleSpeed;
-
         if (rb.velocity.magnitude > grappleSpeed)
         {
             rb.velocity = rb.velocity.normalized * grappleSpeed;
@@ -256,6 +256,7 @@ public class EnemyScript : MonoBehaviour
 
         if (inRange)
         {
+            rb.velocity = new Vector3(0, 0, 0);
             grapple.StopGrapple();
         }
     }

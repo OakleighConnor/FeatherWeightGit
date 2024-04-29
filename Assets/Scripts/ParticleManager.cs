@@ -4,24 +4,25 @@ using UnityEngine;
 public class ParticleManager : MonoBehaviour
 {
     [Header("References")]
-    PlayerMovement player;
-    public ParticleSystem gp;
+    public ParticleSystem groundPound;
+    public ParticleSystem explosion;
+    public ParticleSystem enemyRemains;
     public Transform gpPos;
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GetComponent<PlayerMovement>();
-    }
-    // Update is called once per frame
-    void Update()
-    {
-        
+
     }
 
     public void GroundPound()
     {
-        Instantiate(gp, gpPos.position, transform.rotation = Quaternion.Euler(90, 0, 0));
-        //Make the particle effect destory itself after having played the animation
+        Instantiate(groundPound, gpPos.position, transform.rotation = Quaternion.Euler(90, 0, 0));
+    }
+
+    public void Explosion(Transform trans)
+    {
+        Instantiate(explosion, trans.position, transform.rotation = Quaternion.Euler(90, 0, 0));
+        Instantiate(enemyRemains, trans.position, transform.rotation = Quaternion.Euler(90, 0, 0));
     }
 }

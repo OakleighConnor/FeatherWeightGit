@@ -9,6 +9,7 @@ TagManager:
   - body
   - playerBullet
   - ground
+  - ParticleSystem
   layers:
   - Default
   - TransparentFX

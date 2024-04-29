@@ -6,7 +6,9 @@ public class EnemyHealth : MonoBehaviour
 {
     [Header("References")]
     EnemyScript enemyScript;
-    public PlayerMovement pm;
+    PlayerMovement player;
+    ParticleManager pm;
+    public GameObject hitbox;
     
     // The total max health of the common enemies will be the same as the player (250)
     // The weight of the enemies will be directly proportional to the health.
@@ -19,6 +21,8 @@ public class EnemyHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        pm = FindAnyObjectByType<ParticleManager>();
+        player = FindAnyObjectByType<PlayerMovement>();
         enemyScript = GetComponent<EnemyScript>();
         health = Random.Range(50, 250);
         kb = false;
@@ -29,11 +33,14 @@ public class EnemyHealth : MonoBehaviour
     {
         // The calculation used to get the enemy's weight value. Sets the enemy weight to the health and divides it by 100 as .1 mass = 10 health.
         // We add 0.5 on as the player's mass can never be below 0.5 as otherwise the player would move far too quickly
+
         weight = health / 100 + 0.5f;
+
     }
 
-    public void Hit(float damageTaken, bool knockback)
+    public void Hit(float damageTaken, bool knockback, bool playerKnockback)
     {
+
         kb = knockback;
 
         //Debug.Log("Enemy has taken damage!");
@@ -50,10 +57,9 @@ public class EnemyHealth : MonoBehaviour
         {
             Death();
         }
-
-        if (!kb)
+        if (playerKnockback)
         {
-            pm.Knockback();
+            player.Knockback();
         }
     }
 
@@ -67,7 +73,8 @@ public class EnemyHealth : MonoBehaviour
 
     public void Explode()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
+        pm.Explosion(hitbox.transform);
     }
 
 }

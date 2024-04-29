@@ -90,7 +90,8 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        pm = GetComponent<ParticleManager>();
+
+        pm = FindAnyObjectByType<ParticleManager>();
         grapple = GetComponent<Grappling>();
         rb.freezeRotation = true;
 

@@ -380,10 +380,14 @@ MonoBehaviour:
   gunRotation: {fileID: 6137282103956179611}
   rb: {fileID: 0}
   cam: {fileID: 6998510021672638750}
+  playerCam: {fileID: 0}
+  ground:
+    serializedVersion: 2
+    m_Bits: 8
   activeShootCd: 0
   savedGrappleSpeed: 15
   grappled: 0
-  enemyHeight: 0.5
+  enemyHeight: 0.6
   Ground:
     serializedVersion: 2
     m_Bits: 8
@@ -401,8 +405,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 720f2058b3377e04bb932566e1b92764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitbox: {fileID: 1354965023704470685}
   weight: 0
   health: 0
+  kb: 0
 --- !u!114 &2468697248193488966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -442,9 +448,19 @@ MonoBehaviour:
   BulletShootPoint: {fileID: 2058712645260234652}
   ImpactSystem: {fileID: 2597667539522177945, guid: d890c1c27c3ac4142bd9ed90c025dc9c, type: 3}
   cam: {fileID: 6998510021672638750}
+  weapons: {fileID: 0}
+  gun: {fileID: 0}
+  fist: {fileID: 0}
+  fistDamagePoint: {fileID: 0}
+  fistDistance: 0
+  damageOffset: 0
+  fistHitbox: 0
   player: 0
+  xOffset: 0
   primaryKey: 323
   secondaryKey: 324
+  scrollWheel: 0
+  weaponValue: 0
   weapon: 0
 --- !u!195 &2365504456245814529
 NavMeshAgent:

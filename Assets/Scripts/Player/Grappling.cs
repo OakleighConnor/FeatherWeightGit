@@ -10,6 +10,7 @@ public class Grappling : MonoBehaviour
     EnemyHealth enemyHealth;
     Rigidbody rb;
     GameObject hitEnemy;
+    public Weapon weapon;
     public Vector3 grappledFrom;
     public Transform cam;
     public Transform gunTip;
@@ -25,7 +26,7 @@ public class Grappling : MonoBehaviour
     bool enemyGrappled;
     Vector3 grapplePoint;
     public float savedGrappleSpeed;
-    float grappleSpeed;
+    public float grappleSpeed;
     public Vector3 direction;
     bool grappling;
 
@@ -64,6 +65,8 @@ public class Grappling : MonoBehaviour
 
         if (grappling)
         {
+            weapon.fistDistance = 2.5f;
+
             lr.SetPosition(1, grapplePoint);
             if(enemyScript != null)
             {
@@ -78,20 +81,26 @@ public class Grappling : MonoBehaviour
                     {
                         enemyScript.grappled = false;
                         ExecuteGrapple();
+                        grappleSpeed = savedGrappleSpeed / 1.5f;
                     }
                 }
                 else
                 {
                     enemyScript.grappled = false;
                     ExecuteGrapple();
+                    grappleSpeed = savedGrappleSpeed;
                 }
             }
             else
             {
                 ExecuteGrapple();
+                grappleSpeed = savedGrappleSpeed;
             }
         }
-        
+        else
+        {
+            weapon.fistDistance = 2;
+        }
     }
 
     void LateUpdate()

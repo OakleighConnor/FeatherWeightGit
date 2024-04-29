@@ -34,13 +34,13 @@ public class Weapon : MonoBehaviour
     [Header("Fist")]
     public GameObject fist;
     public Transform fistDamagePoint;
-    public float fistDistance = 1;
+    public float fistDistance;
     public float damageOffset;
     public bool fistHitbox;
+    public bool playerKnockback;
 
     public bool player;
     public float xOffset;
-
 
     [Header("Damage")]
     float pistolDamage = 25;
@@ -83,7 +83,6 @@ public class Weapon : MonoBehaviour
     void Update()
     {
 
-        
         if (player)
         {
             Inputs();
@@ -179,7 +178,7 @@ public class Weapon : MonoBehaviour
     {
         Vector3 direction = GetDirection(cam);
 
-        if (Physics.Raycast(fistDamagePoint.position, direction + new Vector3(0.3f, 0, 0), out RaycastHit hit1, fistDistance, shootable))
+        if (Physics.Raycast(fistDamagePoint.position, direction + new Vector3(0, 0.3f, 0), out RaycastHit hit1, fistDistance, shootable))
         {
             objectHit = hit1.collider.gameObject;
         }
@@ -187,7 +186,7 @@ public class Weapon : MonoBehaviour
         {
             objectHit = hit2.collider.gameObject;
         }
-        else if (Physics.Raycast(fistDamagePoint.position, direction + new Vector3(-0.3f, 0, 0), out RaycastHit hit3, fistDistance, shootable))
+        else if (Physics.Raycast(fistDamagePoint.position, direction + new Vector3(0, -0.3f, 0), out RaycastHit hit3, fistDistance, shootable))
         {
             objectHit = hit3.collider.gameObject;
         }
@@ -197,8 +196,8 @@ public class Weapon : MonoBehaviour
         }
 
         Debug.DrawRay(fistDamagePoint.position, direction * fistDistance, Color.green, 3);
-        Debug.DrawRay(fistDamagePoint.position, direction + new Vector3(0.3f, 0, 0) * fistDistance, Color.red, 3);
-        Debug.DrawRay(fistDamagePoint.position, direction + new Vector3(-0.3f, 0, 0) * fistDistance, Color.blue, 3);
+        Debug.DrawRay(fistDamagePoint.position, direction + new Vector3(0, 0.3f, 0) * fistDistance, Color.red, 3);
+        Debug.DrawRay(fistDamagePoint.position, direction + new Vector3(0, -0.3f, 0) * fistDistance, Color.blue, 3);
 
         if (objectHit != null)
         {
@@ -206,7 +205,7 @@ public class Weapon : MonoBehaviour
             {
                 fistHitbox = false;
                 enemyHealth = objectHit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(DamagePlayerDealt(fistDamage, 2), knockback);
+                enemyHealth.Hit(DamagePlayerDealt(fistDamage, 2), knockback, playerKnockback);
             }
         }
     }
@@ -269,7 +268,7 @@ public class Weapon : MonoBehaviour
             if (hit.CompareTag("enemy"))
             {
                 enemyHealth = hit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(DamagePlayerDealt(pistolDamage, 1), knockback);
+                enemyHealth.Hit(DamagePlayerDealt(pistolDamage, 1), knockback, playerKnockback);
             }
             else if (hit.CompareTag("Player"))
             {
@@ -289,17 +288,13 @@ public class Weapon : MonoBehaviour
     {
         // gun = 1 fist = 2 scrap = 3
 
-        // If the player is heavier than the enemy
-        if(weapon == 2)
-        {
-            Debug.Log("fist");
-        }
         if (pm.weight > enemyHealth.weight)
         {
             if(weapon == 1)
             {
                 // Decrease gun damage
                 damage /= 4;
+                knockback = false;
             }
             else if (weapon == 2)
             {
@@ -307,6 +302,18 @@ public class Weapon : MonoBehaviour
                 // Increase fist damage and make it apply the knockback
                 damage *= 2;
                 knockback = true;
+            }
+        }
+        else
+        {
+            knockback = false;
+            if (weapon == 2)
+            {
+                playerKnockback = true;
+            }
+            else
+            {
+                playerKnockback = false;
             }
         }
         return damage;
