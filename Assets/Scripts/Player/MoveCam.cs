@@ -4,10 +4,20 @@ using UnityEngine;
 
 public class MoveCam : MonoBehaviour
 {
+    [Header("Scripts")]
+    HelperScript helper;
+
     public Transform camPos;
-    // Update is called once per frame
+    void Start()
+    {
+        helper = FindAnyObjectByType<HelperScript>();
+    }
+        // Update is called once per frame
     void Update()
     {
-        transform.position = camPos.position;
+        if (helper.playerAlive)
+        {
+            transform.position = camPos.position;
+        }
     }
 }

@@ -8,21 +8,25 @@ public class EnemyScript : MonoBehaviour
 {
     bool inRange;
 
+    [Header("Scripts")]
+    EnemyReferences enemyRef;
+    EnemyHealth enemyHealth;
+    Grappling grapple;
+    Fist fist;
+    HelperScript helper;
+    PlayerReferences playerRef;
+
     [Header("References")]
     public Transform player;
-    public Transform rightHandObj = null;
     public Transform gunRotation;
-    EnemyReferences er;
-    EnemyHealth eh;
-    Grappling grapple;
     [HideInInspector] public Rigidbody rb;
     public Transform cam;
     public Transform playerCam;
     public LayerMask ground;
 
-    [Header("Cooldown")]
-    float shootCd;
-    public float activeShootCd;
+    [Header("Inverse Kinetics")]
+    public Transform rightHandObj;
+    public Transform leftHandObj;
 
     [Header("Animator")]
 
@@ -56,49 +60,69 @@ public class EnemyScript : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        er = GetComponent<EnemyReferences>();
-        eh = GetComponent<EnemyHealth>();
+        enemyRef = GetComponent<EnemyReferences>();
+        enemyHealth = GetComponent<EnemyHealth>();
+        fist = GetComponent<Fist>();
         grapple = player.GetComponent<Grappling>();
+        helper = FindAnyObjectByType<HelperScript>();
+        playerRef = FindAnyObjectByType<PlayerReferences>();
 
         speed = 7;
         acceleration = 20;
-        shootCd = 1.2f;
     }
     // Start is called before the first frame update
     void Start()
     {
         // Determines the distance that the enemy is able to shoot
         // TODO: Make the enemy shoot
-        shootDis = er.navMesh.stoppingDistance;
+        shootDis = enemyRef.navMesh.stoppingDistance;
         grappled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+
         // Ground check
         enemyFeet = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
         grounded = Physics.Raycast(enemyFeet, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
         Debug.DrawRay(enemyFeet, Vector3.down * enemyHeight, Color.green);
 
-        if (eh.health > 0)
+        if (helper.playerAlive)
         {
-            if (state != MovementState.knockback)
+            if (enemyHealth.health > 0)
             {
-                WeightCalculations();
-                StateManager();
-                Behaviour();
+                GroundCheck();
+
+                if (state != MovementState.knockback)
+                {
+                    WeightCalculations();
+                    StateManager();
+                    Behaviour();
+                }
+                else if (grounded)
+                {
+                    state = MovementState.shooting;
+                }
             }
-            else if (grounded)
+            else if (state == MovementState.falling)
             {
-                state = MovementState.shooting;
+                Debug.Log("death");
+                enemyHealth.Death();
             }
         }
-        else if (state == MovementState.falling)
+        
+
+        if(state != MovementState.punching && enemyRef.navMesh.enabled == true)
         {
-            Debug.Log("death");
-            eh.Death();
+            enemyRef.navMesh.isStopped = false;
         }
+    }
+    void GroundCheck()
+    {
+        enemyFeet = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
+        grounded = Physics.Raycast(enemyFeet, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
+        Debug.DrawRay(enemyFeet, Vector3.down * enemyHeight, Color.green);
     }
     void Behaviour()
     {
@@ -110,6 +134,10 @@ public class EnemyScript : MonoBehaviour
         else if (state == MovementState.punching)
         {
             FacePlayer();
+            if (!enemyRef.punching)
+            {
+                Punch();
+            }
         }
         else if (state == MovementState.grappled)
         {
@@ -118,31 +146,37 @@ public class EnemyScript : MonoBehaviour
 
         if (state == MovementState.grappled || state == MovementState.falling || state == MovementState.knockback)
         {
-            er.navMesh.enabled = false;
+            enemyRef.navMesh.enabled = false;
         }
         else if (grounded)
         {
-            er.navMesh.enabled = true;
+            enemyRef.navMesh.enabled = true;
         }
     }
 
-    public void Knockback()
+    public void Punch()
     {
-        rb.velocity = new Vector3(0, 0, 0);
-        er.navMesh.enabled = false;
+        if (enemyRef.navMesh.enabled == true)
+        {
+            rb.velocity = new Vector3(0, 0, 0);
+            enemyRef.navMesh.velocity = Vector3.zero;
+            enemyRef.navMesh.isStopped = true;
+        }
+        if (!enemyRef.punching)
+        {
+            enemyRef.punching = true;
+            enemyRef.anim.SetTrigger("punch");
+        }
+    }
+    public void TakeKnockback(bool forward)
+    {
+        enemyRef.navMesh.enabled = false;
+        enemyHealth.kb = false;
 
-        Debug.Log("knocking backwards the enemy");
+        helper.Knockback(rb, playerCam, forward, enemyHealth);
 
-        Vector3 direction = playerCam.forward;
-        direction.Normalize();
-
-        rb.AddForce(direction * 30, ForceMode.Impulse);
-
-        Quaternion rotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);
+        helper.RotateTowards(playerCam);
         rb.freezeRotation = true;
-
-        eh.kb = false;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -152,24 +186,29 @@ public class EnemyScript : MonoBehaviour
     void Shooting()
     {
         // Start shooting
-        if (activeShootCd <= 0)
+        if (!enemyRef.shooting && !enemyRef.punching)
         {
-            er.anim.SetTrigger("shoot");
-            activeShootCd = shootCd * eh.weight;
+            enemyRef.anim.SetTrigger("shoot");
+            enemyRef.shooting = true;
         }
-        else
-        {
-            activeShootCd -= Time.deltaTime;
-        }
+    }
+    public void EndPunch()
+    {
+        enemyRef.punching = false;
+    }
+
+    public void EndShot()
+    {
+        enemyRef.shooting = false;
     }
 
     void WeightCalculations()
     {
-        er.navMesh.speed = speed / eh.weight;
-        er.navMesh.acceleration = acceleration / eh.weight;
-        er.anim.speed = animationSpeed / eh.weight/ 1.5f * 2;
+        enemyRef.navMesh.speed = speed / enemyHealth.weight;
+        enemyRef.navMesh.acceleration = acceleration / enemyHealth.weight;
+        enemyRef.anim.speed = animationSpeed / enemyHealth.weight / 1.5f * 2;
         grappleSpeed = savedGrappleSpeed;
-        rb.mass = eh.weight;
+        rb.mass = enemyHealth.weight;
     }
 
     void StateManager()
@@ -202,7 +241,7 @@ public class EnemyScript : MonoBehaviour
                 state = MovementState.shooting;
             }
         }
-        er.anim.SetFloat("speed", er.navMesh.desiredVelocity.sqrMagnitude);
+        enemyRef.anim.SetFloat("speed", enemyRef.navMesh.desiredVelocity.sqrMagnitude);
     }
 
     void FacePlayer()
@@ -214,26 +253,32 @@ public class EnemyScript : MonoBehaviour
     }
     void OnAnimatorIK(int layerIndex)
     {
-        er.anim.SetLookAtPosition(player.position);
-        er.anim.SetLookAtWeight(1, 0, 1); // Second value is the body weight, third value is the head weight (if = 1 then it moves)
+        enemyRef.anim.SetLookAtPosition(playerCam.position);
+        enemyRef.anim.SetLookAtWeight(1, 0, 1); // Second value is the body weight, third value is the head weight (if = 1 then it moves)
 
-        er.anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
-        er.anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-        er.anim.SetIKPosition(AvatarIKGoal.RightHand, rightHandObj.position);
-        er.anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandObj.rotation);
+        enemyRef.anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+        enemyRef.anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
+        enemyRef.anim.SetIKPosition(AvatarIKGoal.RightHand, rightHandObj.position);
+        enemyRef.anim.SetIKRotation(AvatarIKGoal.RightHand, rightHandObj.rotation);
+
+        enemyRef.anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+        enemyRef.anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+        enemyRef.anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandObj.position);
+        enemyRef.anim.SetIKRotation(AvatarIKGoal.LeftHand, leftHandObj.rotation);
     }
 
     void UpdatePath()
     {
         rb.velocity = new Vector3(0,0,0);
 
-        if (er.navMesh.enabled == false) return;
+        if (enemyRef.navMesh.enabled == false) return;
 
         if ( Time.time >= pathUpdateDeadline)
         {
             Debug.Log("Updating Path");
-            pathUpdateDeadline = Time.time + er.pathUpdateDelay;
-            er.navMesh.SetDestination(player.position);
+            pathUpdateDeadline = Time.time + enemyRef.pathUpdateDelay;
+            Vector3 target = new Vector3(player.position.x, transform.position.y, player.position.z);
+            enemyRef.navMesh.SetDestination(target);
         }
     }
     public void GrappleTowardsPlayer()

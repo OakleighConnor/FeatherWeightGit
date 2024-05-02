@@ -6,16 +6,24 @@ public class PlayerAnimControl : MonoBehaviour
 {
 
     [Header("References")]
-    public Weapon weapon;
+    public GameObject player;
+    Fist fist;
+    PlayerWeapons weapon;
+
+    void Start()
+    {
+        fist = player.GetComponent<Fist>();
+        weapon = FindAnyObjectByType<PlayerWeapons>();
+    }
 
     public void PunchHitboxBegin()
     {
-        weapon.fistHitbox = true;
+        fist.fistHitbox = true;
     }
 
     public void PunchHitboxStop()
     {
-        weapon.fistHitbox = false;
+        fist.fistHitbox = false;
     }
 
     public void ResetAttack()

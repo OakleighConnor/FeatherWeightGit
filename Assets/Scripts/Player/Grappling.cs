@@ -6,11 +6,11 @@ public class Grappling : MonoBehaviour
 {
     [Header("References")]
     PlayerMovement pm;
+    PlayerReferences playerRef;
     EnemyScript enemyScript;
     EnemyHealth enemyHealth;
     Rigidbody rb;
     GameObject hitEnemy;
-    public Weapon weapon;
     public Vector3 grappledFrom;
     public Transform cam;
     public Transform gunTip;
@@ -40,6 +40,7 @@ public class Grappling : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        playerRef = GetComponent<PlayerReferences>();
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
         enemyScript = null;
@@ -71,7 +72,7 @@ public class Grappling : MonoBehaviour
                 if (enemyGrappled)
                 {
                     grapplePoint = hitEnemy.transform.position;
-                    if (enemyHealth.weight < pm.weight)
+                    if (enemyHealth.weight < playerRef.weight)
                     {
                         enemyScript.grappled = true;
                     }
@@ -110,7 +111,7 @@ public class Grappling : MonoBehaviour
         if (grapplingCdTimer > 0) return;
 
         // Divides the max distance that the player can grapple from by half of the weight.
-        currentMaxGrappleDistance = maxGrappleDistance / (pm.weight / 2);
+        currentMaxGrappleDistance = maxGrappleDistance / (playerRef.weight / 2);
 
         // Fires a raycast from the position of the camera forwards. If it is within the max grapple distance and it is something that can be grappled then the code activates
         if(Physics.Raycast(cam.position, cam.forward, out hit, currentMaxGrappleDistance, whatIsGrappleable))
@@ -134,7 +135,7 @@ public class Grappling : MonoBehaviour
                 enemyHealth = hitEnemy.GetComponentInParent<EnemyHealth>();
                 enemyScript = hitEnemy.GetComponentInParent<EnemyScript>();
                 // Compares the two weight values of the enemy and the player
-                if (enemyHealth.weight < pm.weight)
+                if (enemyHealth.weight < playerRef.weight)
                 {
                     Debug.Log("Enemy is lighter than the player");
                     // Grapples the enemy towards the player

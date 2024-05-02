@@ -7,8 +7,13 @@ public class EnemyHealth : MonoBehaviour
     [Header("References")]
     EnemyScript enemyScript;
     PlayerMovement player;
+    PlayerReferences playerRef;
+    EnemyReferences enemyRef;
+    HelperScript helper;
     ParticleManager pm;
     public GameObject hitbox;
+    ParticleSystem smoke;
+    EnemyHealth healthScript;
     
     // The total max health of the common enemies will be the same as the player (250)
     // The weight of the enemies will be directly proportional to the health.
@@ -21,9 +26,13 @@ public class EnemyHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        healthScript = GetComponent<EnemyHealth>();
         pm = FindAnyObjectByType<ParticleManager>();
         player = FindAnyObjectByType<PlayerMovement>();
+        playerRef = FindAnyObjectByType<PlayerReferences>();
         enemyScript = GetComponent<EnemyScript>();
+        enemyRef = GetComponent<EnemyReferences>();
+        helper = FindAnyObjectByType<HelperScript>();
         health = Random.Range(50, 250);
         kb = false;
     }
@@ -36,11 +45,26 @@ public class EnemyHealth : MonoBehaviour
 
         weight = health / 100 + 0.5f;
 
+        if(smoke == null)
+        {
+            if (weight < playerRef.weight)
+            {
+                smoke = Instantiate(pm.smoke, hitbox.transform.position, transform.rotation);
+                smoke.transform.rotation = Quaternion.Euler(-90, 0, 0);
+            }
+            else
+            {
+                Destroy(smoke);
+            }
+        }
+        else
+        {
+            smoke.transform.position = hitbox.transform.position;
+        }
     }
 
     public void Hit(float damageTaken, bool knockback, bool playerKnockback)
     {
-
         kb = knockback;
 
         //Debug.Log("Enemy has taken damage!");
@@ -51,7 +75,7 @@ public class EnemyHealth : MonoBehaviour
         if (kb)
         {
             enemyScript.state = EnemyScript.MovementState.knockback;
-            enemyScript.Knockback();
+            enemyScript.TakeKnockback(true);
         }
         else if (health <= 0)
         {
@@ -59,7 +83,7 @@ public class EnemyHealth : MonoBehaviour
         }
         if (playerKnockback)
         {
-            player.Knockback();
+            helper.Knockback(playerRef.rb, playerRef.cam, false, healthScript);
         }
     }
 
@@ -75,6 +99,10 @@ public class EnemyHealth : MonoBehaviour
     {
         Destroy(gameObject);
         pm.Explosion(hitbox.transform);
+        if(smoke != null)
+        {
+            Destroy(smoke);
+        }
     }
 
 }

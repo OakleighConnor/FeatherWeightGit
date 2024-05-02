@@ -5,12 +5,11 @@ using UnityEngine;
 public class EnemyCam : MonoBehaviour
 {
     [Header("References")]
-    public Transform player;
-    Weapon weapon;
+    public Transform playerCam;
     // Start is called before the first frame update
     void Start()
     {
-        weapon = GetComponentInParent<Weapon>();
+
     }
 
     // Update is called once per frame
@@ -21,7 +20,7 @@ public class EnemyCam : MonoBehaviour
 
     void FacePlayer()
     {
-        Vector3 lookPos = player.position - transform.position;
+        Vector3 lookPos = playerCam.position - transform.position;
         lookPos.y -= 1;
         Quaternion rotation = Quaternion.LookRotation(lookPos);
         transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 0.2f);

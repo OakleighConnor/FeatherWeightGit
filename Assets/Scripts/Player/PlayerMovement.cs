@@ -57,6 +57,8 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
     ParticleManager pm;
     Grappling grapple;
+    PlayerReferences references;
+    HelperScript helper;
 
     [Header("Dashing")]
     public float dashForce;
@@ -72,8 +74,6 @@ public class PlayerMovement : MonoBehaviour
     public float dashCd;
     float dashCdTimer;
 
-    [Header("Weight")]
-    public float weight;
 
     public enum MovementState
     {
@@ -90,19 +90,22 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-
+        references = GetComponent<PlayerReferences>();
         pm = FindAnyObjectByType<ParticleManager>();
         grapple = GetComponent<Grappling>();
         rb.freezeRotation = true;
+        helper = FindAnyObjectByType<HelperScript>();
 
         readyToJump = true;
         sliding = false;
 
         startYScale = transform.localScale.y;
+
     }
 
     void Update()
     {
+
 
         WeightImpactCalculations();
 
@@ -156,17 +159,17 @@ public class PlayerMovement : MonoBehaviour
     void WeightImpactCalculations()
     {
         // A variable called "weight" just feels a lot simplistic to work with rather than rb.mass
-        weight = rb.mass;
+        references.weight = rb.mass;
 
         // The effect of weight on the movement
         // Slope
-        maxSlopeAngle = originalMaxSlopeAngle / weight;
+        maxSlopeAngle = originalMaxSlopeAngle / references.weight;
 
         // Dash
-        dashCd *= weight;
+        dashCd *= references.weight;
 
         // The effect of weight on the grapple
-        grapple.grapplingCd *= weight;
+        grapple.grapplingCd *= references.weight;
     }
 
     void MyInput()
@@ -192,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(slideKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
-            rb.AddForce(Vector3.down * gpSpeed * weight * 2, ForceMode.Impulse);
+            rb.AddForce(Vector3.down * gpSpeed * references.weight * 2, ForceMode.Impulse);
 
             if (grounded || airTime <= 0.5f)
             {
@@ -336,7 +339,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (sliding)
             {
-                moveSpeed = slideSpeed / weight;
+                moveSpeed = slideSpeed / references.weight;
             }
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
         }
@@ -355,7 +358,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if(rb.velocity.magnitude > moveSpeed)
             {
-                rb.velocity = rb.velocity.normalized * moveSpeed / weight;
+                rb.velocity = rb.velocity.normalized * moveSpeed / references.weight;
             }
         }
 
@@ -470,19 +473,5 @@ public class PlayerMovement : MonoBehaviour
     private void GroundPound()
     {
         pm.GroundPound();
-    }
-
-    public void Knockback()
-    {
-        grapple.StopGrapple();
-
-        rb.velocity = new Vector3(0, 0, 0);
-
-        Debug.Log("player knocked back");
-
-        Vector3 direction = -playerCam.forward;
-        direction.Normalize();
-
-        rb.AddForce(direction * 40, ForceMode.Impulse);
     }
 }
