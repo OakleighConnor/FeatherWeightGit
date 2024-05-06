@@ -163,12 +163,16 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
         //dash
-        if (Input.GetKeyDown(dashKey) && state != MovementState.sliding)
+        if (sliding)
+        {
+            state = MovementState.sliding;
+        }
+        else if (Input.GetKeyDown(dashKey) && state != MovementState.sliding)
         {
             Dash();
         }
 
-        if (Input.GetKey(jumpKey) && readyToJump && grounded && state != MovementState.sliding)
+        if (Input.GetKeyDown(jumpKey) && readyToJump && grounded && state != MovementState.sliding)
         {
             readyToJump = false;
 

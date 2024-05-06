@@ -112,7 +112,7 @@ public class EnemyScript : MonoBehaviour
                     state = MovementState.shooting;
                 }
             }
-            else if (state == MovementState.falling)
+            else if (state == MovementState.falling || rb.velocity == Vector3.zero)
             {
                 Debug.Log("death");
                 enemyHealth.Death();
@@ -301,7 +301,6 @@ public class EnemyScript : MonoBehaviour
     }
     public void GrappleTowardsPlayer()
     {
-
         Vector3 direction = player.position - transform.position;
         direction.Normalize();
 

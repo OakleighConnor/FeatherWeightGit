@@ -16,11 +16,13 @@ public class PlayerWeapons : MonoBehaviour
     PlayerReferences playerRef;
     Gun gunScript;
     Fist fistScript;
+    Scrap scrapScript;
     public ParticleSystem ShootingSystem;
     public Transform BulletShootPoint;
     public ParticleSystem ImpactSystem;
     public GameObject weapons;
     public GameObject gun;
+    public GameObject scrap;
 
     [Header("Fist")]
     public GameObject fist;
@@ -32,6 +34,9 @@ public class PlayerWeapons : MonoBehaviour
 
     public bool player;
     public float xOffset;
+
+    [Header("Timer")]
+    public float timer;
 
 
     [Header("Inptus")]
@@ -59,6 +64,7 @@ public class PlayerWeapons : MonoBehaviour
         playerRef = GetComponent<PlayerReferences>();
         gunScript = GetComponent<Gun>();
         fistScript = GetComponent<Fist>();
+        scrapScript = GetComponent<Scrap>();
 
 
         weapon = WeaponOut.gun;
@@ -78,6 +84,17 @@ public class PlayerWeapons : MonoBehaviour
 
 
             playerRef.anim.speed = 1 / playerRef.weight / 1.5f * 2;
+
+            if (attacking)
+            {
+                timer += Time.deltaTime;
+
+                if(timer >= 6)
+                {
+                    attacking = false;
+                    timer = 0;
+                }
+            }
         }
 
     }
@@ -91,7 +108,7 @@ public class PlayerWeapons : MonoBehaviour
 
             // Disabling other weapons
             fist.SetActive(false);
-            // scrap.SetActive(false);
+            scrap.SetActive(false);
         }
 
         // Fist
@@ -102,14 +119,14 @@ public class PlayerWeapons : MonoBehaviour
 
             // Disabling other weapons
             gun.SetActive(false);
-            // scrap.SetActive(false);
+            scrap.SetActive(false);
         }
 
         // Scrap
         if (weaponValue == 3)
         {
             weapon = WeaponOut.scrap;
-            // scrap.SetActive(true);
+            scrap.SetActive(true);
 
             // Disabling the other weapons
             gun.SetActive(false);
@@ -148,6 +165,26 @@ public class PlayerWeapons : MonoBehaviour
             {
                 playerRef.anim.SetTrigger("shoot");
                 attacking = true;
+            }
+            else
+            {
+                
+            }
+        }
+
+        if (Input.GetKey(primaryKey))
+        {
+            if (weapon == WeaponOut.scrap)
+            {
+                scrapScript.ChargeScrap();
+            }
+        }
+
+        if (Input.GetKeyUp(primaryKey))
+        {
+            if (weapon == WeaponOut.scrap)
+            {
+                scrapScript.ThrowScrap();
             }
         }
 

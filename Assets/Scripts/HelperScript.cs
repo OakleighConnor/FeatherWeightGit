@@ -154,7 +154,11 @@ public class HelperScript : MonoBehaviour
         {
             direction = -GetDirection(cam, false);
         }
-        direction.y += 0.2f;
+
+        if (!rb.CompareTag("Player"))
+        {
+            direction.y += 0.2f;
+        }
 
         rb.AddForce(direction * knockback * 1000 * Time.deltaTime, ForceMode.Impulse);
     }

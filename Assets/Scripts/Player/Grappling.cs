@@ -334,7 +334,6 @@ public class Grappling : MonoBehaviour
     }
     private IEnumerator ReturnGrapple()
     {
-        Debug.Log("working");
         while (!returnRange)
         {
             grappleHand.transform.position = Vector3.MoveTowards(grappleHand.transform.position, grappleOrigin.transform.position, grappleHandSpeed * 100 * Time.deltaTime);
