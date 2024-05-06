@@ -48,6 +48,8 @@ public class EnemyScript : MonoBehaviour
     public bool grounded;
     Vector3 enemyFeet;
 
+    float timeSinceShot;
+
     public MovementState state;
     public enum MovementState
     {
@@ -59,11 +61,14 @@ public class EnemyScript : MonoBehaviour
     }
     void Awake()
     {
+        player = GameObject.FindWithTag("Player").transform;
+        playerCam = GameObject.FindWithTag("MainCamera").transform;
+
         rb = GetComponent<Rigidbody>();
         enemyRef = GetComponent<EnemyReferences>();
         enemyHealth = GetComponent<EnemyHealth>();
         fist = GetComponent<Fist>();
-        grapple = player.GetComponent<Grappling>();
+        grapple = FindAnyObjectByType<Grappling>();
         helper = FindAnyObjectByType<HelperScript>();
         playerRef = FindAnyObjectByType<PlayerReferences>();
 
@@ -77,6 +82,7 @@ public class EnemyScript : MonoBehaviour
         // TODO: Make the enemy shoot
         shootDis = enemyRef.navMesh.stoppingDistance;
         grappled = false;
+        timeSinceShot = 0;
     }
 
     // Update is called once per frame
@@ -90,6 +96,7 @@ public class EnemyScript : MonoBehaviour
 
         if (helper.playerAlive)
         {
+            Timer();
             if (enemyHealth.health > 0)
             {
                 GroundCheck();
@@ -117,6 +124,11 @@ public class EnemyScript : MonoBehaviour
         {
             enemyRef.navMesh.isStopped = false;
         }
+    }
+
+    void Timer()
+    {
+        timeSinceShot += Time.deltaTime;
     }
     void GroundCheck()
     {
@@ -190,6 +202,13 @@ public class EnemyScript : MonoBehaviour
         {
             enemyRef.anim.SetTrigger("shoot");
             enemyRef.shooting = true;
+            timeSinceShot = 0;
+        }
+        if(timeSinceShot >= 7)
+        {
+            enemyRef.anim.SetTrigger("shoot");
+            enemyRef.shooting = true;
+            timeSinceShot = 0;
         }
     }
     public void EndPunch()
@@ -275,7 +294,6 @@ public class EnemyScript : MonoBehaviour
 
         if ( Time.time >= pathUpdateDeadline)
         {
-            Debug.Log("Updating Path");
             pathUpdateDeadline = Time.time + enemyRef.pathUpdateDelay;
             Vector3 target = new Vector3(player.position.x, transform.position.y, player.position.z);
             enemyRef.navMesh.SetDestination(target);
@@ -283,7 +301,6 @@ public class EnemyScript : MonoBehaviour
     }
     public void GrappleTowardsPlayer()
     {
-        Debug.Log("enemy is lighter than the player");
 
         Vector3 direction = player.position - transform.position;
         direction.Normalize();
@@ -292,7 +309,7 @@ public class EnemyScript : MonoBehaviour
         {
             rb.velocity = rb.velocity.normalized * grappleSpeed;
         }
-        rb.AddForce(direction * grappleSpeed * 10f, ForceMode.Force);
+        rb.AddForce(direction * grappleSpeed * 1000f * Time.deltaTime, ForceMode.Force);
         rb.freezeRotation = false;
 
         Quaternion rotation = Quaternion.LookRotation(direction);
@@ -302,7 +319,8 @@ public class EnemyScript : MonoBehaviour
         if (inRange)
         {
             rb.velocity = new Vector3(0, 0, 0);
-            grapple.StopGrapple();
+            grapple.StopAllCoroutines();
+            grapple.StartReturn();
         }
     }
     public void StopGrappling()

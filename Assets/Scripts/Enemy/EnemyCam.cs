@@ -9,7 +9,7 @@ public class EnemyCam : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        playerCam = GameObject.FindWithTag("MainCamera").transform;
     }
 
     // Update is called once per frame

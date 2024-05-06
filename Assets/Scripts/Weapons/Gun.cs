@@ -44,12 +44,14 @@ public class Gun : MonoBehaviour
         effects = FindAnyObjectByType<ParticleManager>();
     }
 
+
     public void EnemyShoot()
     {
         bulletSpread = true;
         enemyRef = GetComponent<EnemyReferences>();
         Shoot(enemyRef.cam, bulletSpread, enemyRef.interactableLayers);
     }
+
     public void Shoot(Transform cam, bool bulletSpread, LayerMask shootable)
     {
         effects.ShootingSystem.Play();
@@ -92,20 +94,15 @@ public class Gun : MonoBehaviour
             if (hit.CompareTag("enemy"))
             {
                 enemyHealth = hit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight), false, false);
+                enemyHealth.Hit(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight, objectHit.GetComponentInParent<EnemyReferences>()), false, false);
             }
             else if (hit.CompareTag("Player"))
             {
-                Debug.Log("player hit!");
-                Debug.Log(playerHealth);
-                Debug.Log(helper);
-                Debug.Log(gameObject);
-
-                playerHealth.TakeDamage(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight), false, false, gameObject);
+                playerHealth.TakeDamage(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), false, false, gameObject);
             }
             else
             {
-                Debug.Log("no enemy hit");
+                // Nothing interactable hit
             }
         }
         Destroy(trail.gameObject, trail.time);

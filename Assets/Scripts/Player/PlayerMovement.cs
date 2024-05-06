@@ -6,15 +6,12 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
-    public float sprintSpeed;
+    public float defaultMoveSpeed;
 
     public float groundDrag;
 
     public float dashSpeed;
     public float dashSpeedChangeFactor;
-
-    public bool gp;
-    public float gpSpeed;
 
     public Vector3 moveDirection;
     Vector3 slideDirection;
@@ -25,7 +22,6 @@ public class PlayerMovement : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
-    public float airTime;
 
     [Header("Sliding")]
     public float slideSpeed;
@@ -63,7 +59,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Dashing")]
     public float dashForce;
     public float dashUpwardForce;
-    public float dashDuration;
+    float dashDuration;
+    public float savedDashDuration;
 
     [Header("Settings")]
     public bool allowAllDirections = true;
@@ -100,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
         sliding = false;
 
         startYScale = transform.localScale.y;
-
+        defaultMoveSpeed = moveSpeed;
     }
 
     void Update()
@@ -110,25 +107,11 @@ public class PlayerMovement : MonoBehaviour
         WeightImpactCalculations();
 
         //ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, Ground);
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight, Ground);
         
         MyInput();
         SpeedControl();
         StateHandler();
-
-        if (grounded)
-        {
-            airTime = 0;
-        }
-        else
-        {
-            airTime += Time.deltaTime;
-        }
-
-        /*if (airTime >= .5f)
-        {
-            print("Ground pound");
-        }*/
 
         if (dashCdTimer > 0)
         {
@@ -159,17 +142,20 @@ public class PlayerMovement : MonoBehaviour
     void WeightImpactCalculations()
     {
         // A variable called "weight" just feels a lot simplistic to work with rather than rb.mass
-        references.weight = rb.mass;
+        rb.mass = references.weight;
 
         // The effect of weight on the movement
         // Slope
         maxSlopeAngle = originalMaxSlopeAngle / references.weight;
 
         // Dash
-        dashCd *= references.weight;
+        dashCd = 0.5f * references.weight;
 
         // The effect of weight on the grapple
         grapple.grapplingCd *= references.weight;
+
+        // The length of the dash 
+        dashDuration = savedDashDuration / references.weight;
     }
 
     void MyInput()
@@ -195,16 +181,10 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(slideKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
-            rb.AddForce(Vector3.down * gpSpeed * references.weight * 2, ForceMode.Impulse);
 
-            if (grounded || airTime <= 0.5f)
-            {
-                sliding = true;
-            }
-            else
-            {
-                gp = true;
-            }
+            rb.AddForce(Vector3.down * references.weight * 4000 * Time.deltaTime, ForceMode.Impulse);
+
+            sliding = true;
         }
 
         if (Input.GetKeyUp(slideKey))
@@ -232,38 +212,22 @@ public class PlayerMovement : MonoBehaviour
         // Mode - Sliding
         else if (Input.GetKey(slideKey))
         {
-            if (sliding)
-            {
-                state = MovementState.sliding;
-                desiredMoveSpeed = slideSpeed;
-            }
-            else
-            {
-                if (grounded && gp)
-                {
-                    if (rb.velocity.y == 0 || OnSlope())
-                    {
-                        GroundPound();
-                        gp = false;
-                    }
-                }
-                state = MovementState.gp;
-            }
+            state = MovementState.sliding;
+            desiredMoveSpeed = slideSpeed;
         }
 
         // Mode - Sprinting
         else if (grounded)
         {
             state = MovementState.sprinting;
-            desiredMoveSpeed = sprintSpeed;
+            desiredMoveSpeed = defaultMoveSpeed;
         }
 
         // Mode - Air
         else
         {
             state = MovementState.air;
-
-            desiredMoveSpeed = sprintSpeed;
+            desiredMoveSpeed = defaultMoveSpeed;
         }
 
         bool desiredMoveSpeedHasChanged = desiredMoveSpeed != lastDesiredMoveSpeed;
@@ -326,11 +290,11 @@ public class PlayerMovement : MonoBehaviour
         //on slope
         if (OnSlope() && !exitingSlope && state != MovementState.gp)
         {
-            rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
+            rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 2000f * Time.deltaTime, ForceMode.Force);
 
             if(rb.velocity.y > 0)
             {
-                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+                rb.AddForce(Vector3.down * 8000f * Time.deltaTime, ForceMode.Force);
             }
         }
 
@@ -341,11 +305,13 @@ public class PlayerMovement : MonoBehaviour
             {
                 moveSpeed = slideSpeed / references.weight;
             }
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+            rb.AddForce(moveDirection.normalized * moveSpeed * 1000f * Time.deltaTime, ForceMode.Force);
+
         }
         else if (!grounded)
         {
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+            rb.AddForce(moveDirection.normalized * moveSpeed * 1000f * airMultiplier * Time.deltaTime, ForceMode.Force);
         }
 
         //turn gravity off while on slope
@@ -380,7 +346,7 @@ public class PlayerMovement : MonoBehaviour
         // reset y velocity
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        rb.AddForce(transform.up * jumpForce * 1000f * Time.deltaTime, ForceMode.Impulse);
     }
     void ResetJump()
     {
@@ -439,7 +405,7 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = Vector3.zero;
         }
 
-        rb.AddForce(delayedForceToApply, ForceMode.Impulse);
+        rb.AddForce(delayedForceToApply * 100 * Time.deltaTime, ForceMode.Impulse);
     }
     private void ResetDash()
     {
@@ -468,10 +434,5 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return direction.normalized;
-    }
-
-    private void GroundPound()
-    {
-        pm.GroundPound();
     }
 }

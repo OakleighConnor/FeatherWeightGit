@@ -7,7 +7,6 @@ public class ParticleManager : MonoBehaviour
     public Transform gpPos;
 
     [Header("Particles")]
-    public ParticleSystem groundPound;
     public ParticleSystem explosion;
     public ParticleSystem enemyRemains;
     public ParticleSystem impactSystem;
@@ -21,11 +20,6 @@ public class ParticleManager : MonoBehaviour
     void Start()
     {
 
-    }
-
-    public void GroundPound()
-    {
-        Instantiate(groundPound, gpPos.position, transform.rotation = Quaternion.Euler(90, 0, 0));
     }
 
     public void Explosion(Transform trans)

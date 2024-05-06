@@ -49,7 +49,8 @@ public class PlayerWeapons : MonoBehaviour
     {
         gun,
         fist,
-        scrap
+        scrap,
+        dead
     }
 
     // Start is called before the first frame update
@@ -67,16 +68,18 @@ public class PlayerWeapons : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (player)
+        if (weapon != WeaponOut.dead)
         {
             if (!attacking)
             {
                 Inputs();
             }
-            Inputs();
             Weapons();
+
+
+            playerRef.anim.speed = 1 / playerRef.weight / 1.5f * 2;
         }
+
     }
     void Weapons()
     {
@@ -136,14 +139,14 @@ public class PlayerWeapons : MonoBehaviour
 
         if (Input.GetKeyDown(primaryKey))
         {
-            if (weapon == WeaponOut.gun)
-            {
-                gunScript.Shoot(playerRef.cam, false, playerRef.interactableLayers);
-                attacking = true;
-            }
-            else if (weapon == WeaponOut.fist)
+            if (weapon == WeaponOut.fist)
             {
                 playerRef.anim.SetTrigger("punch");
+                attacking = true;
+            }
+            else if (weapon == WeaponOut.gun)
+            {
+                playerRef.anim.SetTrigger("shoot");
                 attacking = true;
             }
         }

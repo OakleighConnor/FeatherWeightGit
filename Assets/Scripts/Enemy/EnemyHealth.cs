@@ -45,6 +45,8 @@ public class EnemyHealth : MonoBehaviour
 
         weight = health / 100 + 0.5f;
 
+        // Smoke 
+
         if(smoke == null)
         {
             if (weight < playerRef.weight)
@@ -52,13 +54,17 @@ public class EnemyHealth : MonoBehaviour
                 smoke = Instantiate(pm.smoke, hitbox.transform.position, transform.rotation);
                 smoke.transform.rotation = Quaternion.Euler(-90, 0, 0);
             }
+        }
+        else
+        {
+            if (weight < playerRef.weight)
+            {
+                smoke.transform.position = hitbox.transform.position;
+            }
             else
             {
                 Destroy(smoke);
             }
-        }
-        else
-        {
             smoke.transform.position = hitbox.transform.position;
         }
     }

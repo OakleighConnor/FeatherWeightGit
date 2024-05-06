@@ -118,7 +118,7 @@ public class Fist : MonoBehaviour
                 Debug.Log("hit enemy");
                 fistHitbox = false;
                 enemyHealth = objectHit.GetComponentInParent<EnemyHealth>();
-                enemyHealth.Hit(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight), true, true); // Bools are Enemy KB and Player KB
+                enemyHealth.Hit(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight, objectHit.GetComponentInParent<EnemyReferences>()), true, true); // Bools are Enemy KB and Player KB
             }
             else if (objectHit.CompareTag("Player"))
             {
@@ -127,7 +127,7 @@ public class Fist : MonoBehaviour
 
                 enemyHealth = GetComponent<EnemyHealth>();
 
-                playerHealth.TakeDamage(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight), true, true, gameObject);
+                playerHealth.TakeDamage(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), true, true, gameObject);
             }
         }
     }

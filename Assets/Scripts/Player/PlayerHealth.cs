@@ -23,7 +23,7 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        playerRef.weight = health / 100 + 0.5f;
     }
 
     public void TakeDamage(float damageTaken, bool knockback, bool forward, GameObject enemy)

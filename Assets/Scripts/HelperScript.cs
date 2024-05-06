@@ -5,27 +5,31 @@ using UnityEngine;
 public class HelperScript : MonoBehaviour
 {
     [Header("Scripts")]
-    PlayerReferences playerRef;
-    EnemyReferences enemyRef;
+    public PlayerReferences playerRef;
+    public EnemyReferences enemyRef;
     Grappling grapple;
     EnemyHealth enemyHealth;
+    PlayerWeapons weapon;
 
     [Header("Bullet")]
-    float bulletSpread;
+    public float bulletSpread;
     public Vector3 bulletSpreadVariance;
 
     GameObject player;
     public bool playerAlive;
 
     public LayerMask shootable;
+
+    [Header("Knockback")]
+    public float knockback = 4;
     // Start is called before the first frame update
     void Start()
     {
         playerRef = FindAnyObjectByType<PlayerReferences>();
         grapple = FindAnyObjectByType<Grappling>();
+        weapon = FindAnyObjectByType<PlayerWeapons>();
         player = GameObject.FindWithTag("Player");
 
-        bulletSpread = 0.1f;
         bulletSpreadVariance = new Vector3(bulletSpread, bulletSpread, bulletSpread);
         playerAlive = true;
     }
@@ -33,13 +37,11 @@ public class HelperScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playerAlive)
-        {
-            player.SetActive(true);
-        }
-        else
+        
+        if (!playerAlive)
         {
             player.SetActive(false);
+            weapon.weapon = PlayerWeapons.WeaponOut.dead;
         }
     }
 
@@ -57,17 +59,14 @@ public class HelperScript : MonoBehaviour
         return direction;
     }
 
-    public float DamageDealt(GameObject hit, float damage, float weapon, float playerWeight, float enemyWeight)
+    public float DamageDealt(GameObject hit, float damage, float weapon, float playerWeight, float enemyWeight, EnemyReferences enemy)
     {
-        Debug.Log("calc damage " + hit);
+
         // gun = 1 fist = 2 scrap = 3
 
         // If the enemy has been hit (Player Attack)
         if (hit.CompareTag("enemy"))
         {
-            Debug.Log("enemy hit");
-            enemyRef = hit.GetComponentInParent<EnemyReferences>();
-
             // If the player is heavier than the enemy
 
             if (playerWeight > enemyWeight)
@@ -77,14 +76,14 @@ public class HelperScript : MonoBehaviour
                 {
                     // Decrease gun damage
                     damage /= 2;
-                    enemyRef.KB = false;
+                    enemy.KB = false;
                 }
                 // If fist
                 else if (weapon == 2)
                 {
                     // Increase fist damage and make it apply the knockback
                     damage *= 2;
-                    enemyRef.KB = true;
+                    enemy.KB = true;
                 }
             }
 
@@ -105,8 +104,6 @@ public class HelperScript : MonoBehaviour
         // If the player has been hit (Enemy Attack)
         else if (hit.CompareTag("Player"))
         {
-            enemyRef = GetComponent<EnemyReferences>();
-
             // If the player is heavier than the enemy
             if (playerWeight > enemyWeight)
             {
@@ -114,13 +111,13 @@ public class HelperScript : MonoBehaviour
                 if (weapon == 1)
                 {
                     // Decrease gun damage
-                    enemyRef.KB = false;
+                    enemy.KB = false;
                 }
                 // If fist
                 else if (weapon == 2)
                 {
                     // Increase fist damage and make it apply the knockback
-                    enemyRef.KB = true;
+                    enemy.KB = true;
                 }
             }
 
@@ -144,7 +141,8 @@ public class HelperScript : MonoBehaviour
     public void Knockback(Rigidbody rb, Transform cam, bool forward, EnemyHealth enemy)
     {
 
-        grapple.StopGrapple();
+        grapple.StopAllCoroutines();
+        grapple.StartReturn();
 
         rb.velocity = new Vector3(0, 0, 0);
         Vector3 direction;
@@ -158,7 +156,7 @@ public class HelperScript : MonoBehaviour
         }
         direction.y += 0.2f;
 
-        rb.AddForce(direction * 40, ForceMode.Impulse);
+        rb.AddForce(direction * knockback * 1000 * Time.deltaTime, ForceMode.Impulse);
     }
 
     public void RotateTowards(Transform cam)
