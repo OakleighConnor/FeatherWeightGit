@@ -134,7 +134,7 @@ public class Grappling : MonoBehaviour
         {
             //state = GrapplingState.launching;
             //StartGrappling();
-            playerRef.anim.SetTrigger("grappleStart");
+            playerRef.anim.SetBool("grappling", true);
         }
 
         if (state == GrapplingState.grappling && !Input.GetKey(grappleKey))
@@ -347,7 +347,7 @@ public class Grappling : MonoBehaviour
 
     public void StopGrapple()
     {
-        playerRef.anim.SetTrigger("grappleEnd");
+        playerRef.anim.SetBool("grappling", false);
 
         state = GrapplingState.idle;
 

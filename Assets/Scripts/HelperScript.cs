@@ -8,12 +8,11 @@ public class HelperScript : MonoBehaviour
     public PlayerReferences playerRef;
     public EnemyReferences enemyRef;
     Grappling grapple;
-    EnemyHealth enemyHealth;
     PlayerWeapons weapon;
 
     [Header("Bullet")]
     public float bulletSpread;
-    public Vector3 bulletSpreadVariance;
+    Vector3 bulletSpreadVariance;
 
     GameObject player;
     public bool playerAlive;
@@ -38,6 +37,7 @@ public class HelperScript : MonoBehaviour
     void Update()
     {
         
+
         if (!playerAlive)
         {
             player.SetActive(false);
@@ -155,12 +155,21 @@ public class HelperScript : MonoBehaviour
             direction = -GetDirection(cam, false);
         }
 
-        if (!rb.CompareTag("Player"))
+        if (rb.CompareTag("Player"))
         {
-            direction.y += 0.2f;
+            direction.y += 1f;
+            knockback *= 4;
+            
+        }
+        else if (rb.CompareTag("enemy"))
+        {
+            knockback *= 8;
+
         }
 
         rb.AddForce(direction * knockback * 1000 * Time.deltaTime, ForceMode.Impulse);
+
+        knockback = 2f;
     }
 
     public void RotateTowards(Transform cam)

@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed;
-    public float defaultMoveSpeed;
+    float defaultMoveSpeed;
 
     public float groundDrag;
 
@@ -50,11 +50,13 @@ public class PlayerMovement : MonoBehaviour
     [Header("References")]
     public Transform orientation;
     public Transform playerCam;
+    PlayerHealth playerHealth;
     Rigidbody rb;
     ParticleManager pm;
     Grappling grapple;
     PlayerReferences references;
     HelperScript helper;
+    EnemyHealth enemyHealth;
 
     [Header("Dashing")]
     public float dashForce;
@@ -98,17 +100,19 @@ public class PlayerMovement : MonoBehaviour
 
         startYScale = transform.localScale.y;
         defaultMoveSpeed = moveSpeed;
+
+        playerHealth = GetComponent<PlayerHealth>();
     }
 
     void Update()
     {
-
-
         WeightImpactCalculations();
 
         //ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight, Ground);
-        
+
+        if (grounded) dashDuration /= 4;
+
         MyInput();
         SpeedControl();
         StateHandler();
@@ -283,7 +287,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        if (state == MovementState.dashing) return;
+        //if (state == MovementState.dashing) return;
 
         //calculate movement direction
         if (!sliding)

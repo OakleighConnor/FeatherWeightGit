@@ -6,7 +6,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(Animator))]
 public class EnemyScript : MonoBehaviour
 {
-    bool inRange;
+    public bool inRange;
 
     [Header("Scripts")]
     EnemyReferences enemyRef;
@@ -57,7 +57,8 @@ public class EnemyScript : MonoBehaviour
         punching,
         grappled,
         falling,
-        knockback
+        knockback,
+        knockbackEnd
     }
     void Awake()
     {
@@ -96,6 +97,9 @@ public class EnemyScript : MonoBehaviour
 
         if (helper.playerAlive)
         {
+            inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
+            
+
             Timer();
             if (enemyHealth.health > 0)
             {
@@ -112,7 +116,7 @@ public class EnemyScript : MonoBehaviour
                     state = MovementState.shooting;
                 }
             }
-            else if (state == MovementState.falling || rb.velocity == Vector3.zero)
+            else if (state == MovementState.knockbackEnd)
             {
                 Debug.Log("death");
                 enemyHealth.Death();
@@ -146,10 +150,7 @@ public class EnemyScript : MonoBehaviour
         else if (state == MovementState.punching)
         {
             FacePlayer();
-            if (!enemyRef.punching)
-            {
-                Punch();
-            }
+            Punch();
         }
         else if (state == MovementState.grappled)
         {
@@ -182,6 +183,7 @@ public class EnemyScript : MonoBehaviour
     }
     public void TakeKnockback(bool forward)
     {
+        Debug.Log("take knockback");
         enemyRef.navMesh.enabled = false;
         enemyHealth.kb = false;
 
@@ -193,7 +195,7 @@ public class EnemyScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        state = MovementState.falling;
+        state = MovementState.knockbackEnd;
     }
     void Shooting()
     {
@@ -229,12 +231,11 @@ public class EnemyScript : MonoBehaviour
         grappleSpeed = savedGrappleSpeed;
         rb.mass = enemyHealth.weight;
     }
-
     void StateManager()
     {
         if (player != null)
         {
-            inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
+            
 
             if(rb.velocity.magnitude == 0)
             {
@@ -256,7 +257,6 @@ public class EnemyScript : MonoBehaviour
             else
             {
                 // Makes the enemy move towards the player
-                
                 state = MovementState.shooting;
             }
         }
@@ -285,7 +285,6 @@ public class EnemyScript : MonoBehaviour
         enemyRef.anim.SetIKPosition(AvatarIKGoal.LeftHand, leftHandObj.position);
         enemyRef.anim.SetIKRotation(AvatarIKGoal.LeftHand, leftHandObj.rotation);
     }
-
     void UpdatePath()
     {
         rb.velocity = new Vector3(0,0,0);
@@ -295,8 +294,7 @@ public class EnemyScript : MonoBehaviour
         if ( Time.time >= pathUpdateDeadline)
         {
             pathUpdateDeadline = Time.time + enemyRef.pathUpdateDelay;
-            Vector3 target = new Vector3(player.position.x, transform.position.y, player.position.z);
-            enemyRef.navMesh.SetDestination(target);
+            enemyRef.navMesh.SetDestination(player.position);
         }
     }
     public void GrappleTowardsPlayer()

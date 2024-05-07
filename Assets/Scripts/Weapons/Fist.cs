@@ -132,3 +132,4 @@ public class Fist : MonoBehaviour
         }
     }
 }
+// Make the player not take way too much knockback
