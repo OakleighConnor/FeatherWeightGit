@@ -98,7 +98,7 @@ public class Gun : MonoBehaviour
             }
             else if (hit.CompareTag("Player"))
             {
-                playerHealth.TakeDamage(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), false, false, gameObject);
+                playerHealth.TakeDamage(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), false, gameObject);
             }
             else
             {

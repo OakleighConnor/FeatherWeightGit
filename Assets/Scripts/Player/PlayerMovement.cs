@@ -157,9 +157,6 @@ public class PlayerMovement : MonoBehaviour
 
         // The effect of weight on the grapple
         grapple.grapplingCd *= references.weight;
-
-        // The length of the dash 
-        dashDuration = savedDashDuration / references.weight;
     }
 
     void MyInput()
@@ -442,5 +439,14 @@ public class PlayerMovement : MonoBehaviour
         }
 
         return direction.normalized;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("scrap"))
+        {
+            Destroy(other.gameObject.transform.parent.gameObject);
+            playerHealth.health += 40;
+        }
     }
 }

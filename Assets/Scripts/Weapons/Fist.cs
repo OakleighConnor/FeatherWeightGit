@@ -127,7 +127,7 @@ public class Fist : MonoBehaviour
 
                 enemyHealth = GetComponent<EnemyHealth>();
 
-                playerHealth.TakeDamage(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), true, true, gameObject);
+                playerHealth.TakeDamage(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), true, gameObject);
             }
         }
     }

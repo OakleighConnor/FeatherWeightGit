@@ -59,6 +59,15 @@ public class Scrap : MonoBehaviour
 
         StateManager();
 
+        if (state == State.charging)
+        {
+            ChargeScrap();
+        }
+        else
+        {
+            scrapCharge = 0;
+        }
+
         if (projectile != null)
         {
             inRange = Vector3.Distance(projectile.transform.position, destination) <= 1f;
@@ -71,15 +80,15 @@ public class Scrap : MonoBehaviour
 
     void StateManager()
     {
-        if (state != State.charging)
+        
+
+        if (state == State.charging)
         {
-            scrapCharge = 0;
+            ChargeScrap();
         }
     }
     public void ChargeScrap()
     {
-        state = State.charging;
-
         Debug.Log("ChargingScrap");
 
         if(scrapCharge <= playerHealth.health - 1)
@@ -87,11 +96,15 @@ public class Scrap : MonoBehaviour
             scrapCharge += Time.deltaTime * chargeSpeed * 10;
         }
         damage = scrapCharge;
+
+        if(damage <= 1)
+        {
+            damage = playerHealth.health - 1;
+        }
     }
 
     public void ThrowScrap()
     {
-        state = State.throwing;
         playerHealth.health -= damage;
 
         Vector3 direction = helper.GetDirection(playerRef.cam, false);
@@ -110,6 +123,8 @@ public class Scrap : MonoBehaviour
 
         projectile = Instantiate(scrapProjectile, shootPoint.position, Quaternion.identity);
         StartCoroutine(LaunchScrap(projectile, objectHit, destination));
+
+        scrapCharge = 0;
     }
 
     private IEnumerator LaunchScrap(GameObject projectile, GameObject hit, Vector3 hitPos)

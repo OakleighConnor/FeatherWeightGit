@@ -379,6 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4068e1d90217d464d8a3b28f47974d54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inRange: 0
   player: {fileID: 0}
   gunRotation: {fileID: 6137282103956179611}
   rb: {fileID: 0}
@@ -391,6 +392,7 @@ MonoBehaviour:
   leftHandObj: {fileID: 820169876501165937}
   savedGrappleSpeed: 15
   grappled: 0
+  grappleDis: 3
   enemyHeight: 0.6
   Ground:
     serializedVersion: 2
@@ -410,10 +412,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitbox: {fileID: 1354965023704470685}
-  smoke: {fileID: 0}
   weight: 0
   health: 0
   kb: 0
+  lighter: 0
+  scrap: {fileID: 0}
+  scrapPrefab: {fileID: 6838819625000203713, guid: 460a96ae83ca7a9459fb1f71023b6c22, type: 3}
+  scrapRB: {fileID: 0}
+  scrapSpeed: 1
+  scrapDirection: {x: 0, y: 0, z: 0}
+  scrapAmount: 3
 --- !u!114 &2468697248193488966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -435,8 +443,8 @@ MonoBehaviour:
   interactableLayers:
     serializedVersion: 2
     m_Bits: 136
-  attacking: 0
-  weight: 0
+  shooting: 0
+  punching: 0
 --- !u!114 &1098035359244581180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -449,12 +457,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca4454edcc5782d41b17259e604ef8c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerRef: {fileID: 0}
-  enemyRef: {fileID: 0}
-  helper: {fileID: 0}
   fistDamagePoint: {fileID: 4093376000772422654}
   fistDistance: 1
-  fistDamage: 25
+  fistDamage: 50
   fistHitbox: 0
 --- !u!114 &2868751276504589864
 MonoBehaviour:
@@ -1008,7 +1013,7 @@ GameObject:
   - component: {fileID: 5099741376831071145}
   - component: {fileID: 770872640449876594}
   - component: {fileID: 7270916326986867006}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Fist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1911,7 +1916,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4093376000772422654}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: DamagePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2818,7 +2823,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 820169876501165937}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FistHandle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

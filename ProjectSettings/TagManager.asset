@@ -10,6 +10,8 @@ TagManager:
   - playerBullet
   - ground
   - ParticleSystem
+  - scrap
+  - collectable
   layers:
   - Default
   - TransparentFX

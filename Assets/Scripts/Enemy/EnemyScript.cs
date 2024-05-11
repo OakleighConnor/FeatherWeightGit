@@ -32,7 +32,7 @@ public class EnemyScript : MonoBehaviour
 
     float pathUpdateDeadline;
     float animationSpeed = 1;
-    float shootDis;
+    float punchDis;
 
     float speed;
     float acceleration;
@@ -41,6 +41,7 @@ public class EnemyScript : MonoBehaviour
     public float savedGrappleSpeed;
     float grappleSpeed;
     public bool grappled;
+    public float grappleDis;
 
     [Header("GroundCheck")]
     public float enemyHeight;
@@ -81,7 +82,7 @@ public class EnemyScript : MonoBehaviour
     {
         // Determines the distance that the enemy is able to shoot
         // TODO: Make the enemy shoot
-        shootDis = enemyRef.navMesh.stoppingDistance;
+        punchDis = enemyRef.navMesh.stoppingDistance;
         grappled = false;
         timeSinceShot = 0;
     }
@@ -89,7 +90,6 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         // Ground check
         enemyFeet = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
         grounded = Physics.Raycast(enemyFeet, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
@@ -97,7 +97,14 @@ public class EnemyScript : MonoBehaviour
 
         if (helper.playerAlive)
         {
-            inRange = Vector3.Distance(transform.position, player.position) <= shootDis;
+            if(state == MovementState.grappled)
+            {
+                inRange = Vector3.Distance(transform.position, player.position) <= grappleDis;
+            }
+            else
+            {
+                inRange = Vector3.Distance(transform.position, player.position) <= punchDis;
+            }
             
 
             Timer();
@@ -227,7 +234,7 @@ public class EnemyScript : MonoBehaviour
     {
         enemyRef.navMesh.speed = speed / enemyHealth.weight;
         enemyRef.navMesh.acceleration = acceleration / enemyHealth.weight;
-        enemyRef.anim.speed = animationSpeed / enemyHealth.weight / 1.5f * 2;
+        enemyRef.anim.speed = animationSpeed / enemyHealth.weight;
         grappleSpeed = savedGrappleSpeed;
         rb.mass = enemyHealth.weight;
     }
@@ -315,7 +322,9 @@ public class EnemyScript : MonoBehaviour
 
         if (inRange)
         {
-            rb.velocity = new Vector3(0, 0, 0);
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            enemyRef.navMesh.velocity = Vector3.zero;
             grapple.StopAllCoroutines();
             grapple.StartReturn();
         }

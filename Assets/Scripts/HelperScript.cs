@@ -20,7 +20,8 @@ public class HelperScript : MonoBehaviour
     public LayerMask shootable;
 
     [Header("Knockback")]
-    public float knockback = 4;
+    public float knockback;
+    float originalKnockback;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +32,7 @@ public class HelperScript : MonoBehaviour
 
         bulletSpreadVariance = new Vector3(bulletSpread, bulletSpread, bulletSpread);
         playerAlive = true;
+        originalKnockback = knockback;
     }
 
     // Update is called once per frame
@@ -140,6 +142,7 @@ public class HelperScript : MonoBehaviour
 
     public void Knockback(Rigidbody rb, Transform cam, bool forward, EnemyHealth enemy)
     {
+        knockback = originalKnockback;
 
         grapple.StopAllCoroutines();
         grapple.StartReturn();
@@ -158,18 +161,15 @@ public class HelperScript : MonoBehaviour
         if (rb.CompareTag("Player"))
         {
             direction.y += 1f;
-            knockback *= 4;
-            
+            Debug.Log("Player taking damage");
         }
         else if (rb.CompareTag("enemy"))
         {
-            knockback *= 8;
-
+            knockback *= 3;
+            Debug.Log("EnemyTakeDamage");
         }
 
         rb.AddForce(direction * knockback * 1000 * Time.deltaTime, ForceMode.Impulse);
-
-        knockback = 2f;
     }
 
     public void RotateTowards(Transform cam)

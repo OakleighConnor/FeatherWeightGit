@@ -10,6 +10,7 @@ public class PlayerAnimControl : MonoBehaviour
     PlayerReferences playerRef;
     Fist fist;
     Gun gun;
+    Scrap scrap;
     PlayerWeapons weapon;
     Grappling grapple;
 
@@ -20,6 +21,7 @@ public class PlayerAnimControl : MonoBehaviour
         gun = player.GetComponent<Gun>();
         weapon = FindAnyObjectByType<PlayerWeapons>();
         grapple = FindAnyObjectByType<Grappling>();
+        scrap = FindAnyObjectByType<Scrap>();
     }
 
     public void Grapple()
@@ -39,6 +41,24 @@ public class PlayerAnimControl : MonoBehaviour
     public void PunchHitboxStop()
     {
         fist.fistHitbox = false;
+    }
+
+    public void ScrapCharge()
+    {
+        scrap.state = Scrap.State.charging;
+    }
+
+
+    public void ThrowScrap()
+    {
+        scrap.state = Scrap.State.throwing;
+        scrap.ThrowScrap();
+    }
+
+    public void ScrapThrowEnd()
+    {
+        scrap.state = Scrap.State.idle;
+        ResetAttack();
     }
 
     public void ResetAttack()

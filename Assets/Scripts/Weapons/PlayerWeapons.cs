@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class PlayerWeapons : MonoBehaviour
 {
     public float shootDelay = 0.5f;
@@ -43,9 +43,17 @@ public class PlayerWeapons : MonoBehaviour
 
     public KeyCode primaryKey = KeyCode.Mouse0;
     public KeyCode secondaryKey = KeyCode.Mouse1;
+    public KeyCode weaponSlot1 = KeyCode.Alpha1;
+    public KeyCode weaponSlot2 = KeyCode.Alpha2;
+    public KeyCode weaponSlot3 = KeyCode.Alpha3;
     public float scrollWheel;
     public float weaponValue;
     public bool attacking;
+
+    [Header("UI")]
+    public Image gunIcon;
+    public Image fistIcon;
+    public Image scrapIcon;
 
     [Header("Weapons")]
 
@@ -76,10 +84,7 @@ public class PlayerWeapons : MonoBehaviour
     {
         if (weapon != WeaponOut.dead)
         {
-            if (!attacking)
-            {
-                Inputs();
-            }
+            Inputs();
             Weapons();
 
 
@@ -105,10 +110,14 @@ public class PlayerWeapons : MonoBehaviour
         {
             weapon = WeaponOut.gun;
             gun.SetActive(true);
+            gunIcon.enabled = true;
 
             // Disabling other weapons
             fist.SetActive(false);
+            fistIcon.enabled = false;
+
             scrap.SetActive(false);
+            scrapIcon.enabled = false;
         }
 
         // Fist
@@ -116,21 +125,45 @@ public class PlayerWeapons : MonoBehaviour
         {
             weapon = WeaponOut.fist;
             fist.SetActive(true);
+            fistIcon.enabled = true;
 
             // Disabling other weapons
             gun.SetActive(false);
+            gunIcon.enabled = false;
+
             scrap.SetActive(false);
+            scrapIcon.enabled = false;
         }
 
         // Scrap
         if (weaponValue == 3)
         {
+            if(scrapScript.state != Scrap.State.throwing)
+            {
+                scrap.SetActive(true);
+            }
+            else
+            {
+                scrap.SetActive(false);
+            }
+
             weapon = WeaponOut.scrap;
-            scrap.SetActive(true);
+            scrapIcon.enabled = true;
 
             // Disabling the other weapons
             gun.SetActive(false);
+            gunIcon.enabled = false;
+
             fist.SetActive(false);
+            fistIcon.enabled = false;
+
+            playerRef.anim.SetBool("scrap", true);
+        }
+        else
+        {
+            scrapScript.state = Scrap.State.idle;
+            playerRef.anim.SetBool("scrap", false);
+            playerRef.anim.SetBool("scrapCharge", false);
         }
     }
 
@@ -152,44 +185,60 @@ public class PlayerWeapons : MonoBehaviour
             weaponValue = 3;
         }
 
+        if (Input.GetKeyDown(weaponSlot1))
+        {
+            weaponValue = 1;
+        }
+        else if (Input.GetKeyDown(weaponSlot2))
+        {
+            weaponValue = 2;
+        }
+        else if (Input.GetKeyDown(weaponSlot3))
+        {
+            weaponValue = 3;
+        }
+
+
+
         // Primary weapon input :
 
-        if (Input.GetKeyDown(primaryKey))
+        if (!attacking)
         {
-            if (weapon == WeaponOut.fist)
+            if (Input.GetKeyDown(primaryKey))
             {
-                playerRef.anim.SetTrigger("punch");
-                attacking = true;
-            }
-            else if (weapon == WeaponOut.gun)
-            {
-                playerRef.anim.SetTrigger("shoot");
-                attacking = true;
-            }
-            else
-            {
-                
+                if (weapon == WeaponOut.fist)
+                {
+                    playerRef.anim.SetTrigger("punch");
+                    attacking = true;
+                }
+                else if (weapon == WeaponOut.gun)
+                {
+                    playerRef.anim.SetTrigger("shoot");
+                    attacking = true;
+                }
+                else if (weapon == WeaponOut.scrap)
+                {
+                    playerRef.anim.SetBool("scrapCharge", true);
+                }
             }
         }
 
+        // Scrap
         if (Input.GetKey(primaryKey))
         {
-            if (weapon == WeaponOut.scrap)
+            if (weapon == WeaponOut.scrap && playerRef.weight >= 1)
             {
                 scrapScript.ChargeScrap();
+                attacking = true;
             }
         }
-
         if (Input.GetKeyUp(primaryKey))
         {
-            if (weapon == WeaponOut.scrap)
+            if (weapon == WeaponOut.scrap/* && playerRef.weight >= 0.3*/)
             {
-                scrapScript.ThrowScrap();
+                playerRef.anim.SetBool("scrapCharge", false);
             }
         }
-
-        // Secondary weapons :
-
     }
 
 }
