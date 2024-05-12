@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 public class ParticleManager : MonoBehaviour
 {
-    [Header("References")]
-    public Transform gpPos;
-
     [Header("Particles")]
     public ParticleSystem explosion;
     public ParticleSystem enemyRemains;

@@ -127,7 +127,7 @@ public class EnemyHealth : MonoBehaviour
     {
         //StartCoroutine(Drops());
         Vector3 scrapPos = transform.position;
-        scrapPos.y += 3;
+        scrapPos.y += 2;
         scrap = Instantiate(scrapPrefab, scrapPos, Quaternion.identity);
         
         Destroy(gameObject);

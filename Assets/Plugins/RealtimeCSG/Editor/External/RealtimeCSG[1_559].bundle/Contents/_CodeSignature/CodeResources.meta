@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 354bc17c9d67a7a419b2360761a94ede
+timeCreated: 1574320360
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 69542
+  packageName: Realtime CSG
+  packageVersion: 1.558
+  assetPath: Assets/Plugins/RealtimeCSG/Editor/External/RealtimeCSG[1_559].bundle/Contents/_CodeSignature/CodeResources
+  uploadId: 383425
