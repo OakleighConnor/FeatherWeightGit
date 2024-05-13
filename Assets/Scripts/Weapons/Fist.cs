@@ -5,12 +5,12 @@ using UnityEngine;
 public class Fist : MonoBehaviour
 {
     [Header("Scripts")]
-    PlayerWeapons player;
-    PlayerReferences playerRef;
-    EnemyReferences enemyRef;
-    HelperScript helper;
-    EnemyHealth enemyHealth;
-    PlayerHealth playerHealth;
+    public PlayerWeapons player;
+    public PlayerReferences playerRef;
+    public EnemyReferences enemyRef;
+    public HelperScript helper;
+    public EnemyHealth enemyHealth;
+    public PlayerHealth playerHealth;
 
     [Header("References")]
     Animator anim;
@@ -79,6 +79,7 @@ public class Fist : MonoBehaviour
     
     public void FistHitbox(Transform cam)
     {
+        Debug.Log("play animation");
         if (CompareTag("Player"))
         {
             interactable = playerRef.interactableLayers;

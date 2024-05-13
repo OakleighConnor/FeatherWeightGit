@@ -29,7 +29,6 @@ public class EnemyScript : MonoBehaviour
     public Transform leftHandObj;
 
     [Header("Animator")]
-
     float pathUpdateDeadline;
     float animationSpeed = 1;
     float punchDis;
@@ -48,6 +47,8 @@ public class EnemyScript : MonoBehaviour
     public LayerMask Ground;
     public bool grounded;
     Vector3 enemyFeet;
+
+    public Vector3 desiredDestination;
 
     float timeSinceShot;
 
@@ -90,11 +91,6 @@ public class EnemyScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(enemyHealth.health <= 0 && state == MovementState.knockbackEnd)
-        {
-            enemyHealth.Death();
-        }
-
         // Ground check
         enemyFeet = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
         grounded = Physics.Raycast(enemyFeet, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
@@ -127,11 +123,6 @@ public class EnemyScript : MonoBehaviour
                 {
                     state = MovementState.shooting;
                 }
-            }
-            else if (state == MovementState.knockbackEnd)
-            {
-                Debug.Log("death");
-                enemyHealth.Death();
             }
         }
         
@@ -207,7 +198,7 @@ public class EnemyScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        state = MovementState.knockbackEnd;
+        state = MovementState.falling;
     }
     void Shooting()
     {
@@ -302,6 +293,7 @@ public class EnemyScript : MonoBehaviour
         rb.velocity = new Vector3(0,0,0);
 
         if (enemyRef.navMesh.enabled == false) return;
+
 
         if ( Time.time >= pathUpdateDeadline)
         {

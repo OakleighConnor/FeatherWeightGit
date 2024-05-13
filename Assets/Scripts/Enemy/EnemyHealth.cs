@@ -13,7 +13,7 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("References")]
     public GameObject hitbox;
-    ParticleSystem smoke;
+    public ParticleSystem smoke;
     
     // The total max health of the common enemies will be the same as the player (250)
     // The weight of the enemies will be directly proportional to the health.
@@ -25,12 +25,9 @@ public class EnemyHealth : MonoBehaviour
     public bool lighter;
 
     [Header("Scrap")]
-    public GameObject scrap;
     public GameObject scrapPrefab;
-    public Rigidbody scrapRB;
     public float scrapSpeed;
     public Vector3 scrapDirection;
-    Quaternion rotation;
     public float scrapAmount;
 
     // Start is called before the first frame update
@@ -48,7 +45,7 @@ public class EnemyHealth : MonoBehaviour
         helper = FindAnyObjectByType<HelperScript>();
 
         // Variable assignment
-        health = Random.Range(50, 250);
+        health = Random.Range(150, 250);
         kb = false;
     }
     void Update()
@@ -57,6 +54,13 @@ public class EnemyHealth : MonoBehaviour
         // We add 0.5 on as the player's mass can never be below 0.5 as otherwise the player would move far too quickly
         weight = health / 100 + 0.5f;
         weight /= 1.75f;
+
+        // Health check
+
+        if (health <= 0 && enemyScript.state != EnemyScript.MovementState.knockback)
+        {
+            Death();
+        }
 
         // Smoke 
 
@@ -91,6 +95,14 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
+    void LateUpdate()
+    {
+        if (health <= 0 && enemyScript.state != EnemyScript.MovementState.knockback)
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public void Hit(float damageTaken, bool knockback, bool playerKnockback)
     {
         kb = knockback;
@@ -100,9 +112,11 @@ public class EnemyHealth : MonoBehaviour
         //Debug.Log("Enemy took " + damageTaken + " damage");
         //Debug.Log("Enemy has " + health + " health remaining");
 
-        if (lighter)
+        if (lighter && kb)
         {
             enemyScript.state = EnemyScript.MovementState.knockback;
+            Vector3 knockbackPrepPos = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
+            transform.position = knockbackPrepPos;
             enemyScript.TakeKnockback(true);
         }
         else if (playerKnockback && !lighter)
@@ -115,49 +129,19 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    public void Death()
+    void Death()
     {
-        if (!kb)
-        {
-            Explode();
-        }
-    }
-
-    public void Explode()
-    {
-        //StartCoroutine(Drops());
+        Debug.Log("scrap spawned");
         Vector3 scrapPos = transform.position;
         scrapPos.y += 2;
-        scrap = Instantiate(scrapPrefab, scrapPos, Quaternion.identity);
-        
-        Destroy(gameObject);
+
         pm.Explosion(hitbox.transform);
 
         if (smoke != null)
         {
             Destroy(smoke);
         }
-    }
 
-    public IEnumerator Drops()
-    {
-        while (scrapAmount >= 0)
-        {
-            Debug.Log(scrapAmount);
-            scrap = Instantiate(scrapPrefab, transform.position, Quaternion.identity);
-            scrapRB = scrap.GetComponentInParent<Rigidbody>();
-
-            scrapDirection = new Vector3(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
-
-            //scrapSpeed = Random.Range(1, 3);
-
-            rotation = Quaternion.LookRotation(scrapDirection);
-            scrap.transform.rotation = Quaternion.Slerp(scrap.transform.rotation, rotation, 0.2f);
-            scrapRB.AddForce(scrap.transform.forward.normalized * scrapSpeed * 1000f * Time.deltaTime, ForceMode.Force);
-
-            scrapAmount = scrapAmount - 1;
-
-            yield return null;
-        }
+        Instantiate(scrapPrefab, scrapPos, Quaternion.identity);
     }
 }

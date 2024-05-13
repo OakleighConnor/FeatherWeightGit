@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 5422681207747860363}
   - component: {fileID: 3291848406145379110}
   - component: {fileID: 8387410603436823433}
+  - component: {fileID: 8570024473016000677}
+  - component: {fileID: 1755724610193576607}
   m_Layer: 0
-  m_Name: Helper
+  m_Name: GameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,14 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ea687f1b6b13a4faf106a8b773e7d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerRef: {fileID: 0}
-  enemyRef: {fileID: 0}
-  bulletSpread: 0.5
+  bulletSpread: 0.1
   playerAlive: 0
   shootable:
     serializedVersion: 2
     m_Bits: 200
-  knockback: 1
+  knockback: 0.5
 --- !u!114 &8387410603436823433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,3 +71,40 @@ MonoBehaviour:
   ShootingSystem: {fileID: 2597667539522177945, guid: d890c1c27c3ac4142bd9ed90c025dc9c, type: 3}
   smoke: {fileID: 7653527018917328750, guid: bb54f715943da7d4480bc5ab35a4a615, type: 3}
   BulletTrail: {fileID: 6587744529221136569, guid: 5abf1fe6d78662642bb5ab4c04072a86, type: 3}
+--- !u!114 &8570024473016000677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196000310538133106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdb4e523916ce884fa6ec3fdb1cd32b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1755724610193576607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196000310538133106}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9913f19bb14acdd46b21a257d9b73cfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  title: {fileID: 0}
+  level: {fileID: 0}
+  shoot: {fileID: 0}
+  grapple: {fileID: 0}
+  grappleConnect: {fileID: 0}
+  explosion: {fileID: 0}
+  highlightUI: {fileID: 0}
+  inputUI: {fileID: 0}
+  audioMixer: {fileID: 0}
+  musicSource: {fileID: 0}
+  SFXSource: {fileID: 0}
+  musicSlider: {fileID: 0}
+  sfxSlider: {fileID: 0}

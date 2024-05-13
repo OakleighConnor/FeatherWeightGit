@@ -97,6 +97,11 @@ public class Scrap : MonoBehaviour
         }
         damage = scrapCharge;
 
+        if(scrapCharge > playerHealth.health)
+        {
+            scrapCharge = playerHealth.health - 1;
+        }
+
         if(damage <= 1)
         {
             damage = playerHealth.health - 1;

@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class HelperScript : MonoBehaviour
 {
+    public static HelperScript instance;
+
     [Header("Scripts")]
-    public PlayerReferences playerRef;
-    public EnemyReferences enemyRef;
+    PlayerReferences playerRef;
+    EnemyReferences enemyRef;
     Grappling grapple;
     PlayerWeapons weapon;
 
@@ -22,11 +24,23 @@ public class HelperScript : MonoBehaviour
     [Header("Knockback")]
     public float knockback;
     float originalKnockback;
+
+    void Awake()
+    {
+        if(instance != null && instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(this);
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
         playerRef = FindAnyObjectByType<PlayerReferences>();
-        grapple = FindAnyObjectByType<Grappling>();
         weapon = FindAnyObjectByType<PlayerWeapons>();
         player = GameObject.FindWithTag("Player");
 
@@ -38,8 +52,6 @@ public class HelperScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-
         if (!playerAlive)
         {
             player.SetActive(false);
@@ -142,6 +154,8 @@ public class HelperScript : MonoBehaviour
 
     public void Knockback(Rigidbody rb, Transform cam, bool forward, EnemyHealth enemy)
     {
+        grapple = FindAnyObjectByType<Grappling>();
+
         knockback = originalKnockback;
 
         grapple.StopAllCoroutines();
@@ -160,16 +174,16 @@ public class HelperScript : MonoBehaviour
 
         if (rb.CompareTag("Player"))
         {
-            direction.y += 1f;
+            direction.y += 2f;
             Debug.Log("Player taking damage");
         }
         else if (rb.CompareTag("enemy"))
         {
-            knockback *= 3;
+            knockback *= 2;
             Debug.Log("EnemyTakeDamage");
         }
 
-        rb.AddForce(direction * knockback * 1000 * Time.deltaTime, ForceMode.Impulse);
+        rb.AddForce(direction * knockback * 10000 * Time.deltaTime, ForceMode.Impulse);
     }
 
     public void RotateTowards(Transform cam)

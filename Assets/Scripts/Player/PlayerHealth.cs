@@ -62,6 +62,11 @@ public class PlayerHealth : MonoBehaviour
         float healthUI;
         healthUI = Mathf.Round(health / 250 * 100);
 
+        if (healthUI == 0)
+        {
+            healthUI = 1;
+        }
+
         // Health Percentage UI
         if (healthUI > 0)
         {

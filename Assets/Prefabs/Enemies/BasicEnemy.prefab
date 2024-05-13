@@ -398,6 +398,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   grounded: 0
+  desiredDestination: {x: 0, y: 10, z: 0}
   state: 0
 --- !u!114 &3567596977178843941
 MonoBehaviour:
@@ -412,16 +413,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitbox: {fileID: 1354965023704470685}
+  smoke: {fileID: 0}
   weight: 0
   health: 0
   kb: 0
   lighter: 0
-  scrap: {fileID: 0}
   scrapPrefab: {fileID: 6838819625000203713, guid: 460a96ae83ca7a9459fb1f71023b6c22, type: 3}
-  scrapRB: {fileID: 0}
   scrapSpeed: 1
   scrapDirection: {x: 0, y: 0, z: 0}
-  scrapAmount: 3
+  scrapAmount: 1
 --- !u!114 &2468697248193488966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,6 +457,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca4454edcc5782d41b17259e604ef8c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  playerRef: {fileID: 0}
+  enemyRef: {fileID: 0}
+  helper: {fileID: 0}
+  enemyHealth: {fileID: 0}
+  playerHealth: {fileID: 0}
   fistDamagePoint: {fileID: 4093376000772422654}
   fistDistance: 1
   fistDamage: 50
@@ -474,7 +480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BulletShootPoint: {fileID: 2058712645260234652}
-  pistolDamage: 25
+  pistolDamage: 10
   shootDistance: 250
   objectHit: {fileID: 0}
 --- !u!195 &2365504456245814529
@@ -486,16 +492,16 @@ NavMeshAgent:
   m_GameObject: {fileID: 1505717558174964306}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 3.5
   m_Speed: 7
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 500
-  m_StoppingDistance: 2
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 2
+  m_Height: 15
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4

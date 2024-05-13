@@ -137,9 +137,20 @@ public class Grappling : MonoBehaviour
             playerRef.anim.SetBool("grappling", true);
         }
 
-        if (state == GrapplingState.grappling && !Input.GetKey(grappleKey))
+        if (!Input.GetKey(grappleKey))
         {
-            StartReturn();
+            if (state == GrapplingState.grappling)
+            {
+                StartReturn();
+            }
+            else if(state == GrapplingState.idle)
+            {
+                playerRef.anim.SetBool("grappling", false);
+            }
+            else if (state == GrapplingState.launching)
+            {
+                StartReturn();
+            }
         }
     }
 
