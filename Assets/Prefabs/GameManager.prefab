@@ -47,12 +47,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96ea687f1b6b13a4faf106a8b773e7d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletSpread: 0.1
+  bulletSpread: 0.3
   playerAlive: 0
   shootable:
     serializedVersion: 2
     m_Bits: 200
-  knockback: 0.5
+  knockback: 1
 --- !u!114 &8387410603436823433
 MonoBehaviour:
   m_ObjectHideFlags: 0

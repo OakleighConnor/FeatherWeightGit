@@ -52,8 +52,8 @@ public class EnemyHealth : MonoBehaviour
     {
         // The calculation used to get the enemy's weight value. Sets the enemy weight to the health and divides it by 100 as .1 mass = 10 health.
         // We add 0.5 on as the player's mass can never be below 0.5 as otherwise the player would move far too quickly
-        weight = health / 100 + 0.5f;
-        weight /= 1.75f;
+        weight = health / 100;
+        weight += 0.5f;
 
         // Health check
 

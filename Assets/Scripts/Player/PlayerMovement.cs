@@ -149,6 +149,8 @@ public class PlayerMovement : MonoBehaviour
         rb.mass = references.weight;
 
         // The effect of weight on the movement
+
+        
         // Slope
         maxSlopeAngle = originalMaxSlopeAngle / references.weight;
 
@@ -349,9 +351,9 @@ public class PlayerMovement : MonoBehaviour
         exitingSlope = true;
 
         // reset y velocity
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        //rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        rb.AddForce(transform.up * jumpForce * 1000f * Time.deltaTime, ForceMode.Impulse);
+        rb.AddForce(transform.up * jumpForce * 10f, ForceMode.Impulse);
     }
     void ResetJump()
     {
@@ -446,7 +448,7 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("scrap"))
         {
             Destroy(other.gameObject.transform.parent.gameObject);
-            playerHealth.health += 40;
+            playerHealth.health += 100;
         }
     }
 }

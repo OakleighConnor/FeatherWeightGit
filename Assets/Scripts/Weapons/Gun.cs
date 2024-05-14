@@ -57,7 +57,7 @@ public class Gun : MonoBehaviour
         effects.ShootingSystem.Play();
         Vector3 direction = helper.GetDirection(cam, bulletSpread);
 
-        if (Physics.Raycast(cam.position, direction, out RaycastHit hit, float.MaxValue, shootable))
+        if (Physics.Raycast(cam.position, direction, out RaycastHit hit, shootDistance, shootable))
         {
             bulletDestination = hit.point;
 

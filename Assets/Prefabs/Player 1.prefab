@@ -1906,8 +1906,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd876381df59fc24fb2fea74c7c1bcdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensX: 400
-  sensY: 400
+  sensitivity: 800
   orientation: {fileID: 2130962386752211157}
 --- !u!1 &4082531081903998480
 GameObject:
@@ -4061,16 +4060,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55dfaa34443b48140bec25c5138c2073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  moveSpeed: 10
   groundDrag: 2
-  dashSpeed: 20
-  dashSpeedChangeFactor: 50
+  dashSpeed: 30
+  dashSpeedChangeFactor: 60
   moveDirection: {x: 0, y: 0, z: 0}
   state: 0
   jumpForce: 10
   jumpCooldown: 0.25
   airMultiplier: 0.4
-  slideSpeed: 10
+  slideSpeed: 15
   slideYScale: 0.5
   sliding: 0
   playerHeight: 1.1

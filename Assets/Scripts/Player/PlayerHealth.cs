@@ -46,8 +46,8 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        playerRef.weight = health / 100 + 0.5f;
-        playerRef.weight /= 1.75f;
+        playerRef.weight = health / 100;
+        playerRef.weight += 0.5f;
 
         if(health > maxHealth)
         {
@@ -97,7 +97,7 @@ public class PlayerHealth : MonoBehaviour
     void UpdateUIColor()
     {
         healthColorValue = health / 150;
-        if (healthColorValue <= 1)
+        if (healthColorValue <= .5f)
         {
             healthPercentage.color = Color.Lerp(colors[lowHealthColor], colors[midHealthColor], healthColorValue);
             weaponSlot1.color = Color.Lerp(colors[lowHealthColor], colors[midHealthColor], healthColorValue);
@@ -105,7 +105,7 @@ public class PlayerHealth : MonoBehaviour
             weaponSlot3.color = Color.Lerp(colors[lowHealthColor], colors[midHealthColor], healthColorValue);
             healthBar.color = Color.Lerp(colors[lowHealthColor], colors[midHealthColor], healthColorValue);
         }
-        else if (healthColorValue <= 2)
+        else if (healthColorValue <= 1.5f)
         {
             healthPercentage.color = Color.Lerp(colors[midHealthColor], colors[highHealthColor], healthColorValue);
             weaponSlot1.color = Color.Lerp(colors[midHealthColor], colors[highHealthColor], healthColorValue);

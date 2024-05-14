@@ -174,15 +174,16 @@ public class HelperScript : MonoBehaviour
 
         if (rb.CompareTag("Player"))
         {
-            direction.y += 2f;
+            direction.y += .5f;
             Debug.Log("Player taking damage");
         }
         else if (rb.CompareTag("enemy"))
         {
-            knockback *= 2;
+            knockback *= 2f;
+            rb.gameObject.transform.position = new Vector3(rb.gameObject.transform.position.x, rb.gameObject.transform.position.y + 0.5f, rb.gameObject.transform.position.z);
+            rb.mass = 0.5f;
             Debug.Log("EnemyTakeDamage");
         }
-
         rb.AddForce(direction * knockback * 10000 * Time.deltaTime, ForceMode.Impulse);
     }
 

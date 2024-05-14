@@ -12,6 +12,7 @@ TagManager:
   - ParticleSystem
   - scrap
   - collectable
+  - BattleA
   layers:
   - Default
   - TransparentFX

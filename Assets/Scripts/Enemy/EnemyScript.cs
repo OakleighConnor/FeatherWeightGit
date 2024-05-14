@@ -31,7 +31,7 @@ public class EnemyScript : MonoBehaviour
     [Header("Animator")]
     float pathUpdateDeadline;
     float animationSpeed = 1;
-    float punchDis;
+    public float punchDis;
 
     float speed;
     float acceleration;
@@ -155,9 +155,14 @@ public class EnemyScript : MonoBehaviour
             FacePlayer();
             Punch();
         }
-        else if (state == MovementState.grappled)
+
+        if (state == MovementState.grappled)
         {
             GrappleTowardsPlayer();
+        }
+        else
+        {
+
         }
 
         if (state == MovementState.grappled || state == MovementState.falling || state == MovementState.knockback)
@@ -232,6 +237,7 @@ public class EnemyScript : MonoBehaviour
         enemyRef.navMesh.acceleration = acceleration / enemyHealth.weight;
         enemyRef.anim.speed = animationSpeed / enemyHealth.weight;
         grappleSpeed = savedGrappleSpeed;
+        
         rb.mass = enemyHealth.weight;
     }
     void StateManager()

@@ -7,9 +7,9 @@ public class CameraScript : MonoBehaviour
     [Header("Scripts")]
     HelperScript helper;
 
-
-    public float sensX;
-    public float sensY;
+    public float sensitivity;
+    float sensX;
+    float sensY;
 
     public Transform orientation;
 
@@ -23,6 +23,9 @@ public class CameraScript : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        sensX = sensitivity;
+        sensY = sensitivity;   
     }
 
     // Update is called once per frame
