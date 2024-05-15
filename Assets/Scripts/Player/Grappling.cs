@@ -255,7 +255,6 @@ public class Grappling : MonoBehaviour
                 hitObject = null;
                 enemyGrappled = false;
                 // Plays the grapple
-                Debug.Log("this stange bit");
                 StopAllCoroutines();
                 StartCoroutine(ShootHand(hitObject, grapplePoint));
             }
@@ -269,7 +268,6 @@ public class Grappling : MonoBehaviour
 
             enemyGrappled = false;
             // Plays the grapple
-            Debug.Log("nobody hit");
             StopAllCoroutines();
             StartCoroutine(ShootHand(hitObject, grapplePoint));
         }

@@ -111,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
         //ground check
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight, Ground);
 
-        if (grounded) dashDuration /= 4;
+        if (grounded) dashDuration /= 2;
 
         MyInput();
         SpeedControl();
@@ -445,7 +445,7 @@ public class PlayerMovement : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("scrap"))
+        if (other.CompareTag("collectable"))
         {
             Destroy(other.gameObject.transform.parent.gameObject);
             playerHealth.health += 100;

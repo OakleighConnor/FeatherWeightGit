@@ -115,7 +115,6 @@ public class EnemyScript : MonoBehaviour
 
                 if (state != MovementState.knockback)
                 {
-                    WeightCalculations();
                     StateManager();
                     Behaviour();
                 }
@@ -130,6 +129,14 @@ public class EnemyScript : MonoBehaviour
         if(state != MovementState.punching && enemyRef.navMesh.enabled == true)
         {
             enemyRef.navMesh.isStopped = false;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (state != MovementState.knockback)
+        {
+            WeightCalculations();
         }
     }
 
@@ -159,10 +166,6 @@ public class EnemyScript : MonoBehaviour
         if (state == MovementState.grappled)
         {
             GrappleTowardsPlayer();
-        }
-        else
-        {
-
         }
 
         if (state == MovementState.grappled || state == MovementState.falling || state == MovementState.knockback)

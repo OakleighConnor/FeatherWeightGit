@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BattleActivate : MonoBehaviour
 {
+    [Header("Scripts")]
+    PlatformManager manager;
+
     [Header("Enemies")]
     public GameObject enemyPrefab;
     public GameObject enemy;
@@ -20,37 +24,46 @@ public class BattleActivate : MonoBehaviour
     bool spawnedAt4 = false;
 
     [Header("Battling")]
-    bool battleComplete = false;
+    public bool battleComplete = false;
     bool battling = false;
 
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
+        manager = FindAnyObjectByType<PlatformManager>();
 
+        spawn1 = transform.Find("SpawnA");
+        spawn2 = transform.Find("SpawnB");
+        spawn3 = transform.Find("SpawnC");
+        spawn4 = transform.Find("SpawnD");
+    }
     // Update is called once per frame
     void Update()
     {
-        
-    }
 
+    }
     public void StartBattle()
     {
-        if (battleComplete || battling) return;
+        if (battleComplete || manager.battling) return;
 
-        battling = true;
-
-        if(gameObject.name != "TriggerBattleA")
+        if(gameObject.CompareTag("BattleA"))
         {
             Debug.Log("First battle");
-            enemies = Random.Range(1, 3);
+            enemies = 1;
         }
         else
         {
-            enemies = 1;
+            enemies = Random.Range(1, 4);
         }
+        Debug.Log("There are " + enemies + " enemies spawning");
+
+        manager.StartBattle(enemies, GetComponent<BattleActivate>());
         StartCoroutine(SpawnEnemies(enemies));
+    }
+
+    public void RestartBattle()
+    {
+        battling = false;
     }
 
     IEnumerator SpawnEnemies(float enemies)
@@ -66,7 +79,7 @@ public class BattleActivate : MonoBehaviour
             }
             else
             {
-                enemy = Instantiate(enemyPrefab, spawn1.position, Quaternion.identity);
+                Instantiate(enemyPrefab, GetEnemySpawnPoint().position, Quaternion.identity);
                 enemies--;
             }
             yield return enemies;
@@ -77,73 +90,21 @@ public class BattleActivate : MonoBehaviour
     {
         float enemySpawnPos = Random.Range(1, 4);
 
-        Transform enemySpawn;
-
         if (enemySpawnPos == 1)
         {
-            if (spawnedAt1)
-            {
-                spawnedAt1 = false;
-                spawnedAt2 = false;
-                spawnedAt3 = false;
-                spawnedAt4 = false;
-                return null;
-            }
-            else
-            {
-                enemySpawn = spawn1;
-                spawnedAt1 = true;
-            }
+            return spawn1;
         }
         else if (enemySpawnPos == 2)
         {
-            if (spawnedAt2)
-            {
-                spawnedAt1 = false;
-                spawnedAt2 = false;
-                spawnedAt3 = false;
-                spawnedAt4 = false;
-                return null;
-            }
-            else
-            {
-                enemySpawn = spawn2;
-                spawnedAt2 = true;
-            }
+            return spawn2;
         }
         else if (enemySpawnPos == 3)
         {
-            if (spawnedAt3)
-            {
-                spawnedAt1 = false;
-                spawnedAt2 = false;
-                spawnedAt3 = false;
-                spawnedAt4 = false;
-                return null;
-            }
-            else
-            {
-                enemySpawn = spawn3;
-                spawnedAt3 = true;
-            }
+            return spawn3;
         }
         else
         {
-            if (spawnedAt4)
-            {
-                spawnedAt1 = false;
-                spawnedAt2 = false;
-                spawnedAt3 = false;
-                spawnedAt4 = false;
-                return null;
-            }
-            else
-            {
-                enemySpawn = spawn4;
-                spawnedAt4 = true;
-            }
+            return spawn4;
         }
-
-        return enemySpawn;
     }
 }

@@ -20,8 +20,10 @@ public class PlayerPlatformInteraction : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        battle = other.GetComponent<BattleActivate>();
-        battle.StartBattle();
-        
+        if (!other.CompareTag("collectable"))
+        {
+            battle = other.GetComponent<BattleActivate>();
+            battle.StartBattle();
+        }
     }
 }

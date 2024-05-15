@@ -10,6 +10,7 @@ public class EnemyHealth : MonoBehaviour
     HelperScript helper;
     ParticleManager pm;
     EnemyHealth healthScript;
+    PlatformManager manager;
 
     [Header("References")]
     public GameObject hitbox;
@@ -39,6 +40,9 @@ public class EnemyHealth : MonoBehaviour
 
         // Player references
         playerRef = FindAnyObjectByType<PlayerReferences>();
+
+        // Level references
+        manager = FindAnyObjectByType<PlatformManager>();
 
         // Exterior references
         pm = FindAnyObjectByType<ParticleManager>();
@@ -142,6 +146,7 @@ public class EnemyHealth : MonoBehaviour
             Destroy(smoke);
         }
 
+        manager.EnemySlain();
         Instantiate(scrapPrefab, scrapPos, Quaternion.identity);
     }
 }

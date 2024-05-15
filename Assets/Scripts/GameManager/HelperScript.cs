@@ -15,6 +15,7 @@ public class HelperScript : MonoBehaviour
     [Header("Bullet")]
     public float bulletSpread;
     Vector3 bulletSpreadVariance;
+    int shotsFired;
 
     GameObject player;
     public bool playerAlive;
@@ -47,6 +48,7 @@ public class HelperScript : MonoBehaviour
         bulletSpreadVariance = new Vector3(bulletSpread, bulletSpread, bulletSpread);
         playerAlive = true;
         originalKnockback = knockback;
+        shotsFired = 0;
     }
 
     // Update is called once per frame
@@ -65,7 +67,15 @@ public class HelperScript : MonoBehaviour
 
         if (BulletSpread)
         {
-            direction += new Vector3(Random.Range(-bulletSpreadVariance.x, bulletSpreadVariance.x), Random.Range(-bulletSpreadVariance.y, bulletSpreadVariance.y), Random.Range(-bulletSpreadVariance.z, bulletSpreadVariance.z));
+            if(shotsFired > 3)
+            {
+                direction += new Vector3(Random.Range(-bulletSpreadVariance.x, bulletSpreadVariance.x), Random.Range(-bulletSpreadVariance.y, bulletSpreadVariance.y), Random.Range(-bulletSpreadVariance.z, bulletSpreadVariance.z));
+                shotsFired = 0;
+            }
+            else
+            {
+                shotsFired++;
+            }
         }
 
         direction.Normalize();
@@ -184,7 +194,7 @@ public class HelperScript : MonoBehaviour
             rb.mass = 0.5f;
             Debug.Log("EnemyTakeDamage");
         }
-        rb.AddForce(direction * knockback * 10000 * Time.deltaTime, ForceMode.Impulse);
+        rb.AddForce(direction * knockback * 1000 * Time.deltaTime, ForceMode.Impulse);
     }
 
     public void RotateTowards(Transform cam)
