@@ -15,9 +15,6 @@ public class MoveCam : MonoBehaviour
         // Update is called once per frame
     void Update()
     {
-        if (helper.playerAlive)
-        {
-            transform.position = camPos.position;
-        }
+        transform.position = camPos.position;
     }
 }

@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Scripts")]
     PlayerReferences playerRef;
     HelperScript helper;
+    PlatformManager manager;
     EnemyHealth enemyHealth;
     EnemyReferences enemyRef;
 
@@ -40,6 +41,8 @@ public class PlayerHealth : MonoBehaviour
     {
         playerRef = GetComponent<PlayerReferences>();
         helper = FindAnyObjectByType<HelperScript>();
+        manager = FindAnyObjectByType<PlatformManager>();
+
 
         displayedHealth = health;
     }
@@ -148,6 +151,6 @@ public class PlayerHealth : MonoBehaviour
     void Death()
     {
         Debug.Log("Player Dead");
-        helper.playerAlive = false;
+        manager.RespawnPlayer();
     }
 }

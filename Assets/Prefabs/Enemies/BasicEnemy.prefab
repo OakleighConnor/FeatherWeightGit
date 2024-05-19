@@ -394,6 +394,8 @@ MonoBehaviour:
   savedGrappleSpeed: 15
   grappled: 0
   grappleDis: 3
+  knockbackDuration: 1
+  knockbackTimer: 0
   enemyHeight: 0.6
   Ground:
     serializedVersion: 2
@@ -419,6 +421,7 @@ MonoBehaviour:
   health: 0
   kb: 0
   lighter: 0
+  dead: 0
   scrapPrefab: {fileID: 6838819625000203713, guid: 460a96ae83ca7a9459fb1f71023b6c22, type: 3}
   scrapSpeed: 1
   scrapDirection: {x: 0, y: 0, z: 0}
@@ -444,6 +447,9 @@ MonoBehaviour:
   interactableLayers:
     serializedVersion: 2
     m_Bits: 136
+  player:
+    serializedVersion: 2
+    m_Bits: 128
   shooting: 0
   punching: 0
 --- !u!114 &1098035359244581180
@@ -498,7 +504,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 500
-  m_StoppingDistance: 2.5
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1

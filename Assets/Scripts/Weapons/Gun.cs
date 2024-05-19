@@ -13,6 +13,7 @@ public class Gun : MonoBehaviour
     ParticleManager effects;
     EnemyHealth enemyHealth;
     PlayerHealth playerHealth;
+    AudioManager am;
 
     [Header("Gun")]
     public Transform BulletShootPoint;
@@ -32,6 +33,7 @@ public class Gun : MonoBehaviour
         player = FindAnyObjectByType<PlayerMovement>();
         playerRef = FindAnyObjectByType<PlayerReferences>();
         weapon = FindAnyObjectByType<PlayerWeapons>();
+        am = FindAnyObjectByType<AudioManager>();
 
         if (CompareTag("enemy"))
         {
@@ -54,7 +56,13 @@ public class Gun : MonoBehaviour
 
     public void Shoot(Transform cam, bool bulletSpread, LayerMask shootable)
     {
+        helper = FindAnyObjectByType<HelperScript>();
+        am = FindAnyObjectByType<AudioManager>();
+        am.PlaySFX(am.shoot);
         effects.ShootingSystem.Play();
+        Debug.Log(helper);
+        Debug.Log(cam);
+        Debug.Log(bulletSpread);
         Vector3 direction = helper.GetDirection(cam, bulletSpread);
 
         if (Physics.Raycast(cam.position, direction, out RaycastHit hit, shootDistance, shootable))
@@ -96,8 +104,9 @@ public class Gun : MonoBehaviour
                 enemyHealth = hit.GetComponentInParent<EnemyHealth>();
                 enemyHealth.Hit(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight, objectHit.GetComponentInParent<EnemyReferences>()), false, false);
             }
-            else if (hit.CompareTag("Player"))
+            else if (objectHit.name == "PlayerObj")
             {
+                Debug.Log("Player hit");
                 playerHealth.TakeDamage(helper.DamageDealt(objectHit, pistolDamage, 1, playerRef.weight, enemyHealth.weight, GetComponent<EnemyReferences>()), false, gameObject);
             }
             else

@@ -15,6 +15,7 @@ public class EnemyScript : MonoBehaviour
     Fist fist;
     HelperScript helper;
     PlayerReferences playerRef;
+    PlatformManager manager;
 
     [Header("References")]
     public Transform player;
@@ -41,6 +42,10 @@ public class EnemyScript : MonoBehaviour
     float grappleSpeed;
     public bool grappled;
     public float grappleDis;
+
+    [Header("Knockback")]
+    public float knockbackDuration;
+    public float knockbackTimer;
 
     [Header("GroundCheck")]
     public float enemyHeight;
@@ -75,6 +80,8 @@ public class EnemyScript : MonoBehaviour
         helper = FindAnyObjectByType<HelperScript>();
         playerRef = FindAnyObjectByType<PlayerReferences>();
 
+        manager = FindAnyObjectByType<PlatformManager>();
+
         speed = 7;
         acceleration = 20;
     }
@@ -86,47 +93,68 @@ public class EnemyScript : MonoBehaviour
         punchDis = enemyRef.navMesh.stoppingDistance;
         grappled = false;
         timeSinceShot = 0;
+        enemyRef.navMesh.enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(state == MovementState.knockback)
+        {
+            knockbackTimer += Time.deltaTime;
+
+            if(knockbackTimer > knockbackDuration)
+            {
+                enemyHealth.Death();
+            }
+        }
+        else
+        {
+            knockbackTimer = 0;
+        }
+
+        if(manager.enemiesRemaining == 0)
+        {
+            if (enemyHealth.smoke != null)
+            {
+                Destroy(enemyHealth.smoke);
+            }
+            Destroy(gameObject);
+        }
+
         // Ground check
         enemyFeet = new Vector3(transform.position.x, transform.position.y + 0.1f, transform.position.z);
         grounded = Physics.Raycast(enemyFeet, Vector3.down, enemyHeight * 0.5f + 0.2f, Ground);
         Debug.DrawRay(enemyFeet, Vector3.down * enemyHeight, Color.green);
 
-        if (helper.playerAlive)
+        if (state == MovementState.grappled)
         {
-            if(state == MovementState.grappled)
-            {
-                inRange = Vector3.Distance(transform.position, player.position) <= grappleDis;
-            }
-            else
-            {
-                inRange = Vector3.Distance(transform.position, player.position) <= punchDis;
-            }
-            
+            inRange = Vector3.Distance(transform.position, player.position) <= grappleDis;
+        }
+        else
+        {
+            inRange = Vector3.Distance(transform.position, player.position) <= punchDis;
+        }
 
-            Timer();
-            if (enemyHealth.health > 0)
-            {
-                GroundCheck();
 
-                if (state != MovementState.knockback)
-                {
-                    StateManager();
-                    Behaviour();
-                }
-                else if (grounded)
-                {
-                    state = MovementState.shooting;
-                }
+        Timer();
+        if (enemyHealth.health > 0)
+        {
+            GroundCheck();
+
+            if (state != MovementState.knockback)
+            {
+                StateManager();
+                Behaviour();
+            }
+            else if (grounded)
+            {
+                state = MovementState.shooting;
             }
         }
-        
 
-        if(state != MovementState.punching && enemyRef.navMesh.enabled == true)
+
+        if (state != MovementState.punching && enemyRef.navMesh.enabled == true)
         {
             enemyRef.navMesh.isStopped = false;
         }
@@ -188,6 +216,7 @@ public class EnemyScript : MonoBehaviour
         }
         if (!enemyRef.punching)
         {
+            fist.fistHitbox = true;
             enemyRef.punching = true;
             enemyRef.anim.SetTrigger("punch");
         }
@@ -338,5 +367,13 @@ public class EnemyScript : MonoBehaviour
     public void StopGrappling()
     {
         grappled = false;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Death"))
+        {
+            enemyHealth.Death();
+        }
     }
 }

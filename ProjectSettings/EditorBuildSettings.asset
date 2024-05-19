@@ -9,10 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/TitleScreen.unity
     guid: 17f1178fdfdf5dd4388e31e72365260c
   - enabled: 1
-    path: Assets/Scenes/NotASampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/Scenes/Testing.unity
-    guid: cea746b61a036b44bb3e30b27434ec99
+    path: Assets/Scenes/1-1.unity
+    guid: ec4304c239a1b2a49b685d89e5e5450f
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

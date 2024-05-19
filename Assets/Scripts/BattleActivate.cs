@@ -25,7 +25,6 @@ public class BattleActivate : MonoBehaviour
 
     [Header("Battling")]
     public bool battleComplete = false;
-    bool battling = false;
 
     // Start is called before the first frame update
     void Start()
@@ -46,24 +45,24 @@ public class BattleActivate : MonoBehaviour
     {
         if (battleComplete || manager.battling) return;
 
-        if(gameObject.CompareTag("BattleA"))
+        manager.battling = true;
+
+        if (gameObject.name == "TriggerBattleA")
         {
-            Debug.Log("First battle");
             enemies = 1;
+        }
+        else if (gameObject.name == "TriggerBattleE")
+        {
+            enemies = 5;
         }
         else
         {
-            enemies = Random.Range(1, 4);
+            enemies = Random.Range(2, 4);
         }
         Debug.Log("There are " + enemies + " enemies spawning");
 
         manager.StartBattle(enemies, GetComponent<BattleActivate>());
         StartCoroutine(SpawnEnemies(enemies));
-    }
-
-    public void RestartBattle()
-    {
-        battling = false;
     }
 
     IEnumerator SpawnEnemies(float enemies)

@@ -5,11 +5,12 @@ using UnityEngine;
 public class PlayerPlatformInteraction : MonoBehaviour
 {
     [Header("Script")]
-    BattleActivate battle;
+    public BattleActivate battle;
+    PlatformManager manager;
     // Start is called before the first frame update
     void Start()
     {
-        
+        manager = FindAnyObjectByType<PlatformManager>();
     }
 
     // Update is called once per frame
@@ -20,7 +21,13 @@ public class PlayerPlatformInteraction : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("collectable"))
+        if (other.CompareTag("Death"))
+        {
+            Debug.Log("Kill the player");
+
+            manager.RespawnPlayer();
+        }
+        else if (!other.CompareTag("scrap"))
         {
             battle = other.GetComponent<BattleActivate>();
             battle.StartBattle();

@@ -15,7 +15,11 @@ public class AudioManager : MonoBehaviour
     public AudioClip shoot;
     public AudioClip grapple;
     public AudioClip grappleConnect;
+    public AudioClip grappleDisconnect;
     public AudioClip explosion;
+    public AudioClip woosh;
+    public AudioClip enemyDamage;
+    public AudioClip heal;
     // UI :
     public AudioClip highlightUI;
     public AudioClip inputUI;
@@ -31,22 +35,26 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private Slider musicSlider;
     [SerializeField] private Slider sfxSlider;
 
+    GameObject settingsMenu;
+
     // Start is called before the first frame update
     void Start()
     {
-        /*if (PlayerPrefs.HasKey("musicVolume"))
+        if (PlayerPrefs.HasKey("musicVolume"))
         {
             LoadVolume();
         }
         else
         {
             SetMusicVolume();
-        }*/
+        }
+
+        settingsMenu = GameObject.FindGameObjectWithTag("Settings").transform.GetChild(0).gameObject;
 
         // To make the game play the title theme on launch:
 
-        /*musicSource.clip = title;
-        musicSource.Play();*/
+        musicSource.clip = level;
+        musicSource.Play();
     }
 
     // Update is called once per frame
@@ -57,26 +65,30 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(AudioClip clip)
     {
+        Debug.Log(clip);
         SFXSource.PlayOneShot(clip);
     }
-    public void Play(AudioClip clip)
+
+    public void PlaySFX2()
     {
-        SFXSource.PlayOneShot(clip);
+        SFXSource.PlayOneShot(inputUI);
     }
 
     public void SetMusicVolume()
     {
+        musicSlider = GameObject.FindGameObjectWithTag("MusicSlider").GetComponent<Slider>();
         float volume = musicSlider.value;
         audioMixer.SetFloat("music", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("musicVolume", volume);
     }
     public void SetSFXVolume()
     {
+        musicSlider = GameObject.FindGameObjectWithTag("SFXSlider").GetComponent<Slider>();
         float volume = sfxSlider.value;
         audioMixer.SetFloat("sfx", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("sfxVolume", volume);
     }
-    private void LoadVolume()
+    public void LoadVolume()
     {
         musicSlider.value = PlayerPrefs.GetFloat("musicVolume");
         sfxSlider.value = PlayerPrefs.GetFloat("sfxVolume");

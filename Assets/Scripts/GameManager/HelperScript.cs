@@ -18,7 +18,6 @@ public class HelperScript : MonoBehaviour
     int shotsFired;
 
     GameObject player;
-    public bool playerAlive;
 
     public LayerMask shootable;
 
@@ -28,25 +27,23 @@ public class HelperScript : MonoBehaviour
 
     void Awake()
     {
-        if(instance != null && instance != this)
+        if(instance != null)
         {
-            Destroy(this);
+            Destroy(gameObject);
         }
         else
         {
             instance = this;
-            DontDestroyOnLoad(this);
+            DontDestroyOnLoad(gameObject);
         }
     }
     // Start is called before the first frame update
     void Start()
     {
-        playerRef = FindAnyObjectByType<PlayerReferences>();
         weapon = FindAnyObjectByType<PlayerWeapons>();
         player = GameObject.FindWithTag("Player");
 
         bulletSpreadVariance = new Vector3(bulletSpread, bulletSpread, bulletSpread);
-        playerAlive = true;
         originalKnockback = knockback;
         shotsFired = 0;
     }
@@ -54,11 +51,7 @@ public class HelperScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!playerAlive)
-        {
-            player.SetActive(false);
-            weapon.weapon = PlayerWeapons.WeaponOut.dead;
-        }
+
     }
 
     public Vector3 GetDirection(Transform cam, bool BulletSpread)
@@ -69,11 +62,11 @@ public class HelperScript : MonoBehaviour
         {
             if(shotsFired > 3)
             {
-                direction += new Vector3(Random.Range(-bulletSpreadVariance.x, bulletSpreadVariance.x), Random.Range(-bulletSpreadVariance.y, bulletSpreadVariance.y), Random.Range(-bulletSpreadVariance.z, bulletSpreadVariance.z));
                 shotsFired = 0;
             }
             else
             {
+                direction += new Vector3(Random.Range(-bulletSpreadVariance.x, bulletSpreadVariance.x), Random.Range(-bulletSpreadVariance.y, bulletSpreadVariance.y), Random.Range(-bulletSpreadVariance.z, bulletSpreadVariance.z));
                 shotsFired++;
             }
         }
@@ -85,7 +78,7 @@ public class HelperScript : MonoBehaviour
 
     public float DamageDealt(GameObject hit, float damage, float weapon, float playerWeight, float enemyWeight, EnemyReferences enemy)
     {
-
+        playerRef = FindAnyObjectByType<PlayerReferences>();
         // gun = 1 fist = 2 scrap = 3
 
         // If the enemy has been hit (Player Attack)
@@ -128,6 +121,7 @@ public class HelperScript : MonoBehaviour
         // If the player has been hit (Enemy Attack)
         else if (hit.CompareTag("Player"))
         {
+            Debug.Log("Calculating player damage fine so far ");
             // If the player is heavier than the enemy
             if (playerWeight > enemyWeight)
             {
@@ -159,6 +153,7 @@ public class HelperScript : MonoBehaviour
                 }
             }
         }
+        Debug.Log("Player took " + " damage");
         return damage;
     }
 

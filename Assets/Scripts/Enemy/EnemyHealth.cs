@@ -11,6 +11,7 @@ public class EnemyHealth : MonoBehaviour
     ParticleManager pm;
     EnemyHealth healthScript;
     PlatformManager manager;
+    AudioManager am;
 
     [Header("References")]
     public GameObject hitbox;
@@ -24,6 +25,7 @@ public class EnemyHealth : MonoBehaviour
     public float health;
     public bool kb;
     public bool lighter;
+    public bool dead;
 
     [Header("Scrap")]
     public GameObject scrapPrefab;
@@ -47,6 +49,7 @@ public class EnemyHealth : MonoBehaviour
         // Exterior references
         pm = FindAnyObjectByType<ParticleManager>();
         helper = FindAnyObjectByType<HelperScript>();
+        am = FindAnyObjectByType<AudioManager>();
 
         // Variable assignment
         health = Random.Range(150, 250);
@@ -81,7 +84,7 @@ public class EnemyHealth : MonoBehaviour
         {
             if (lighter)
             {
-                smoke = Instantiate(pm.smoke, hitbox.transform.position, transform.rotation);
+                smoke = Instantiate(pm.smoke);
                 smoke.transform.rotation = Quaternion.Euler(-90, 0, 0);
             }
         }
@@ -109,6 +112,8 @@ public class EnemyHealth : MonoBehaviour
 
     public void Hit(float damageTaken, bool knockback, bool playerKnockback)
     {
+        am.PlaySFX(am.enemyDamage);
+
         kb = knockback;
 
         //Debug.Log("Enemy has taken damage!");
@@ -133,8 +138,14 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
-    void Death()
+    public void Death()
     {
+        if (dead) return;
+
+        dead = true;
+
+        am.PlaySFX(am.explosion);
+
         Debug.Log("scrap spawned");
         Vector3 scrapPos = transform.position;
         scrapPos.y += 2;
@@ -146,7 +157,15 @@ public class EnemyHealth : MonoBehaviour
             Destroy(smoke);
         }
 
-        manager.EnemySlain();
+        manager.activeScrap++;
         Instantiate(scrapPrefab, scrapPos, Quaternion.identity);
+
+        if (manager.enemiesRemaining == 0) return;
+
+        manager.enemiesRemaining--;
+
+        manager.NextLevel();
     }
+
+
 }

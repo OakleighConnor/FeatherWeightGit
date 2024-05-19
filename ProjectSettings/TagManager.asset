@@ -23,6 +23,19 @@ TagManager:
   - A3
   - A4
   - A5
+  - Spawn
+  - C1
+  - C2
+  - C3
+  - C4
+  - C5
+  - Death
+  - PauseMenu
+  - SFXSlider
+  - MusicSlider
+  - HUD
+  - Settings
+  - TitleScreen
   layers:
   - Default
   - TransparentFX
@@ -32,7 +45,7 @@ TagManager:
   - UI
   - Enemy
   - Player
-  - 
+  - Death
   - 
   - 
   - 

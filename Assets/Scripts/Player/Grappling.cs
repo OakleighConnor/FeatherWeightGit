@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Grappling : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Scripts")]
     PlayerReferences playerRef;
     EnemyScript enemyScript;
     EnemyHealth enemyHealth;
     Rigidbody rb;
     GameObject hitObject;
+    AudioManager am;
 
     [Header("Grapple Components")]
     public GameObject grapple;
@@ -52,7 +53,6 @@ public class Grappling : MonoBehaviour
     [Header("Input")]
     public KeyCode grappleKey = KeyCode.Mouse1;
 
-
     public GrapplingState state;
     public enum GrapplingState
     {
@@ -65,6 +65,7 @@ public class Grappling : MonoBehaviour
     void Start()
     {
         playerRef = GetComponent<PlayerReferences>();
+        am = FindAnyObjectByType<AudioManager>();
         rb = GetComponent<Rigidbody>();
         enemyScript = null;
     }
@@ -141,6 +142,7 @@ public class Grappling : MonoBehaviour
         {
             if (state == GrapplingState.grappling)
             {
+                am.PlaySFX(am.grappleDisconnect);
                 StartReturn();
             }
             else if(state == GrapplingState.idle)
@@ -205,6 +207,9 @@ public class Grappling : MonoBehaviour
 
     public void StartGrappling()
     {
+        am = FindAnyObjectByType<AudioManager>();
+        am.PlaySFX(am.grapple);
+
         state = GrapplingState.launching;
 
         if (grapplingCdTimer > 0) return;
@@ -303,7 +308,8 @@ public class Grappling : MonoBehaviour
             {
 
             }
-
+            am = FindAnyObjectByType<AudioManager>();
+            am.PlaySFX(am.grappleConnect);
             state = GrapplingState.grappling;
         }
         else
@@ -334,6 +340,7 @@ public class Grappling : MonoBehaviour
 
     public void StartReturn()
     {
+
         state = GrapplingState.returning;
 
         grappleHand.transform.rotation = grappleOrigin.transform.rotation;

@@ -33,6 +33,7 @@ public class PlayerMovement : MonoBehaviour
     KeyCode jumpKey = KeyCode.Space;
     KeyCode dashKey = KeyCode.LeftShift;
     KeyCode slideKey = KeyCode.LeftControl;
+    KeyCode pauseKey = KeyCode.Escape;
     float horizontalInput;
     float verticalInput;
 
@@ -57,6 +58,10 @@ public class PlayerMovement : MonoBehaviour
     PlayerReferences references;
     HelperScript helper;
     EnemyHealth enemyHealth;
+    PauseMenu pauseMenuScript;
+    GameObject pauseMenu;
+    AudioManager am;
+    UIButtons ui;
 
     [Header("Dashing")]
     public float dashForce;
@@ -94,6 +99,11 @@ public class PlayerMovement : MonoBehaviour
         grapple = GetComponent<Grappling>();
         rb.freezeRotation = true;
         helper = FindAnyObjectByType<HelperScript>();
+        pauseMenuScript = GetComponent<PauseMenu>();
+        pauseMenu = pauseMenuScript.pauseMenu;
+        am = FindAnyObjectByType<AudioManager>();
+        ui = FindAnyObjectByType<UIButtons>();
+        Time.timeScale = 1;
 
         readyToJump = true;
         sliding = false;
@@ -113,7 +123,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (grounded) dashDuration /= 2;
 
-        MyInput();
+        if (!pauseMenuScript.paused)
+        {
+            GameInput();
+        }
+        UIInput();
         SpeedControl();
         StateHandler();
 
@@ -143,6 +157,21 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
     }
 
+    void UIInput()
+    {
+        if (Input.GetKeyDown(pauseKey))
+        {
+            if (ui.settingsMenu.activeSelf)
+            {
+                ui.ToggleSettings();
+            }
+            else
+            {
+                pauseMenuScript.TogglePause();
+            }
+        }
+    }
+
     void WeightImpactCalculations()
     {
         // A variable called "weight" just feels a lot simplistic to work with rather than rb.mass
@@ -161,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
         grapple.grapplingCd *= references.weight;
     }
 
-    void MyInput()
+    void GameInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
@@ -189,7 +218,7 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(transform.localScale.x, slideYScale, transform.localScale.z);
 
-            rb.AddForce(Vector3.down * references.weight * 4000 * Time.deltaTime, ForceMode.Impulse);
+            rb.AddForce(Vector3.down * 10, ForceMode.Impulse);
 
             sliding = true;
         }
@@ -200,6 +229,7 @@ public class PlayerMovement : MonoBehaviour
 
             sliding = false;
         }
+
     }
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
@@ -445,8 +475,9 @@ public class PlayerMovement : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("collectable"))
+        if (other.CompareTag("scrap"))
         {
+            am.PlaySFX(am.heal);
             Destroy(other.gameObject.transform.parent.gameObject);
             playerHealth.health += 100;
         }

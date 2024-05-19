@@ -31,6 +31,7 @@ public class PlayerAnimControl : MonoBehaviour
 
     public void Shoot()
     {
+        playerRef = player.GetComponent<PlayerReferences>();
         gun.Shoot(playerRef.cam, false, playerRef.interactableLayers);
     }
     public void PunchHitboxBegin()
@@ -63,6 +64,7 @@ public class PlayerAnimControl : MonoBehaviour
 
     public void ResetAttack()
     {
+        weapon = FindAnyObjectByType<PlayerWeapons>();
         weapon.attacking = false;
     }
 }

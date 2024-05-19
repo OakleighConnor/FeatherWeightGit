@@ -18,6 +18,7 @@ public class EnemyReferences : MonoBehaviour
     [Header("Damage")]
     public bool KB;
     public LayerMask interactableLayers;
+    public LayerMask player;
     public bool shooting;
     public bool punching;
 

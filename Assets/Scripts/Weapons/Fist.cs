@@ -79,6 +79,8 @@ public class Fist : MonoBehaviour
     
     public void FistHitbox(Transform cam)
     {
+        helper = FindAnyObjectByType<HelperScript>();
+
         Debug.Log("play animation");
         if (CompareTag("Player"))
         {
@@ -114,6 +116,8 @@ public class Fist : MonoBehaviour
 
         if (objectHit != null)
         {
+            Debug.Log(objectHit);
+
             if (objectHit.CompareTag("enemy"))
             {
                 Debug.Log("hit enemy");
@@ -121,7 +125,7 @@ public class Fist : MonoBehaviour
                 enemyHealth = objectHit.GetComponentInParent<EnemyHealth>();
                 enemyHealth.Hit(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight, objectHit.GetComponentInParent<EnemyReferences>()), true, true); // Bools are Enemy KB and Player KB
             }
-            else if (objectHit.CompareTag("Player"))
+            else if (objectHit.name == "PlayerObj")
             {
                 fistHitbox = false;
                 Debug.Log("Player has been punched");

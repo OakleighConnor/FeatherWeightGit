@@ -38,9 +38,7 @@ public class PlayerWeapons : MonoBehaviour
     [Header("Timer")]
     public float timer;
 
-
     [Header("Inptus")]
-
     public KeyCode primaryKey = KeyCode.Mouse0;
     public KeyCode secondaryKey = KeyCode.Mouse1;
     public KeyCode weaponSlot1 = KeyCode.Alpha1;
@@ -48,6 +46,7 @@ public class PlayerWeapons : MonoBehaviour
     public KeyCode weaponSlot3 = KeyCode.Alpha3;
     public float scrollWheel;
     public float weaponValue;
+    public float lastWeaponValue;
     public bool attacking;
 
     [Header("UI")]
@@ -76,7 +75,8 @@ public class PlayerWeapons : MonoBehaviour
 
 
         weapon = WeaponOut.gun;
-        attacking = false;
+        attacking = true;
+        timer = 3;
     }
 
     // Update is called once per frame
@@ -84,9 +84,8 @@ public class PlayerWeapons : MonoBehaviour
     {
         if (weapon != WeaponOut.dead)
         {
-            Inputs();
             Weapons();
-
+            Inputs();
 
             playerRef.anim.speed = 1 / playerRef.weight / 1.5f * 2;
 
@@ -94,7 +93,7 @@ public class PlayerWeapons : MonoBehaviour
             {
                 timer += Time.deltaTime;
 
-                if(timer >= 6)
+                if(timer >= 5)
                 {
                     attacking = false;
                     timer = 0;
@@ -105,6 +104,13 @@ public class PlayerWeapons : MonoBehaviour
     }
     void Weapons()
     {
+        if(lastWeaponValue != weaponValue)
+        {
+            attacking = false;
+        }
+
+        lastWeaponValue = weaponValue;
+
         // Gun
         if (weaponValue == 1)
         {
@@ -216,11 +222,12 @@ public class PlayerWeapons : MonoBehaviour
                     playerRef.anim.SetTrigger("shoot");
                     attacking = true;
                 }
-                else if (weapon == WeaponOut.scrap)
-                {
-                    playerRef.anim.SetBool("scrapCharge", true);
-                }
             }
+        }
+
+        if (Input.GetKeyDown(primaryKey) && scrapScript.state == Scrap.State.idle && weapon == WeaponOut.scrap)
+        {
+            playerRef.anim.SetBool("scrapCharge", true);
         }
 
         // Scrap
