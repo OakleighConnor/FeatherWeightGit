@@ -2991,13 +2991,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4701536317769446407}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7512696462694408455}
-  m_Father: {fileID: 4395759274917988776}
+  m_Father: {fileID: 3097919633789061138}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5474,6 +5474,7 @@ MonoBehaviour:
   weaponSlot3: 51
   scrollWheel: 0
   weaponValue: 1
+  lastWeaponValue: 0
   attacking: 0
   gunIcon: {fileID: 5679229281363141599}
   fistIcon: {fileID: 881402424631760718}
@@ -5910,6 +5911,7 @@ RectTransform:
   - {fileID: 4125143672080523080}
   - {fileID: 5600791496793343009}
   - {fileID: 4897325296460601318}
+  - {fileID: 4630978460183739603}
   m_Father: {fileID: 4395759274917988776}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -6026,7 +6028,6 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4630978460183739603}
   - {fileID: 3097919633789061138}
   - {fileID: 7698682531294839518}
   m_Father: {fileID: 8975925215275781179}

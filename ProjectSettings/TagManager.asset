@@ -36,6 +36,7 @@ TagManager:
   - HUD
   - Settings
   - TitleScreen
+  - Win
   layers:
   - Default
   - TransparentFX

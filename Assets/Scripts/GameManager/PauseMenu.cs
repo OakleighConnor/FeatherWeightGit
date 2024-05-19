@@ -5,7 +5,7 @@ using UnityEngine;
 public class PauseMenu : MonoBehaviour
 {
     [Header("Scripts")]
-    UIButtons ui;
+    public UIButtons ui;
 
     [Header("Pause Menu")]
     public GameObject pauseMenu;
@@ -29,6 +29,7 @@ public class PauseMenu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        ui = FindAnyObjectByType<UIButtons>();
         Debug.Log(pauseMenu);
         if (pauseMenu != null && !ui.settings)
         {

@@ -384,6 +384,7 @@ GameObject:
   - component: {fileID: 388237051}
   - component: {fileID: 388237050}
   - component: {fileID: 388237049}
+  - component: {fileID: 388237053}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: TitleScreen
@@ -474,6 +475,18 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &388237053
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388237048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7aa238f7d468d449e8fa31c902aab6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &422185268
 GameObject:
   m_ObjectHideFlags: 0
@@ -625,8 +638,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1909576197}
-        m_TargetAssemblyTypeName: UIButtons, Assembly-CSharp
+      - m_Target: {fileID: 388237053}
+        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
         m_MethodName: ToggleSettings
         m_Mode: 1
         m_Arguments:
@@ -933,8 +946,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1909576197}
-        m_TargetAssemblyTypeName: UIButtons, Assembly-CSharp
+      - m_Target: {fileID: 388237053}
+        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
         m_MethodName: ChangeScene
         m_Mode: 1
         m_Arguments:
@@ -1160,37 +1173,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1156553426}
   m_CullTransparentMesh: 1
---- !u!1 &1276260623
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1276260624}
-  m_Layer: 0
-  m_Name: TitleScreenColorManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1276260624
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1276260623}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 437.16443, y: 288.38892, z: -571.5294}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1549171815
 GameObject:
   m_ObjectHideFlags: 0
@@ -1325,17 +1307,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1549171815}
   m_CullTransparentMesh: 1
---- !u!114 &1909576197 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8570024473016000677, guid: 93ef16830ab8f0b45ac84cbd495497b1, type: 3}
-  m_PrefabInstance: {fileID: 1019896458}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdb4e523916ce884fa6ec3fdb1cd32b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1934311813
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,5 +1449,4 @@ SceneRoots:
   - {fileID: 203844589}
   - {fileID: 388237052}
   - {fileID: 422185271}
-  - {fileID: 1276260624}
   - {fileID: 1019896458}

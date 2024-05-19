@@ -62,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
     GameObject pauseMenu;
     AudioManager am;
     UIButtons ui;
+    PlatformManager platform;
 
     [Header("Dashing")]
     public float dashForce;
@@ -159,8 +160,10 @@ public class PlayerMovement : MonoBehaviour
 
     void UIInput()
     {
-        if (Input.GetKeyDown(pauseKey))
+        platform = FindAnyObjectByType<PlatformManager>();
+        if (Input.GetKeyDown(pauseKey) && !platform.winScreen.activeSelf)
         {
+            ui = FindAnyObjectByType<UIButtons>();
             if (ui.settingsMenu.activeSelf)
             {
                 ui.ToggleSettings();
@@ -479,6 +482,7 @@ public class PlayerMovement : MonoBehaviour
         {
             am.PlaySFX(am.heal);
             Destroy(other.gameObject.transform.parent.gameObject);
+            playerHealth = GetComponent<PlayerHealth>();
             playerHealth.health += 100;
         }
     }

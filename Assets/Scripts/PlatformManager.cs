@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class PlatformManager : MonoBehaviour
@@ -43,6 +44,8 @@ public class PlatformManager : MonoBehaviour
     public GameObject checkpoint4;
     public GameObject checkpoint5;
 
+    [Header("UI")]
+    public GameObject winScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -91,18 +94,31 @@ public class PlatformManager : MonoBehaviour
         arena3.SetActive(false);
         arena4.SetActive(false);
         arena5.SetActive(false);
+
+        // UI
+
+        winScreen = GameObject.FindGameObjectWithTag("Win").transform.GetChild(0).gameObject;
+        winScreen.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
         // If enemies are alive then battling is set to true
-
-        LevelInfo();
-
-        
+        if (levelPart == 6)
+        {
+            LevelFinish();
+        }
+        else
+        {
+            LevelInfo();
+        }
     }
-
+    void LevelFinish()
+    {
+        winScreen = GameObject.FindGameObjectWithTag("Win").transform.GetChild(0).gameObject;
+        winScreen.SetActive(true);
+    }
     public void LevelInfo()
     {
 

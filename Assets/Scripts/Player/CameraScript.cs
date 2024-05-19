@@ -7,6 +7,7 @@ public class CameraScript : MonoBehaviour
     [Header("Scripts")]
     HelperScript helper;
     PauseMenu pause;
+    PlatformManager pm;
     UIButtons ui;
 
     public float sensitivity;
@@ -23,6 +24,7 @@ public class CameraScript : MonoBehaviour
     {
         helper = FindAnyObjectByType<HelperScript>();
         pause = FindAnyObjectByType<PauseMenu>();
+        pm = FindAnyObjectByType<PlatformManager>();
 
         ui = FindAnyObjectByType<UIButtons>();
 
@@ -38,8 +40,9 @@ public class CameraScript : MonoBehaviour
     {
         pause = FindAnyObjectByType<PauseMenu>();
         ui = FindAnyObjectByType<UIButtons>();
+        pm = FindAnyObjectByType<PlatformManager>();
 
-        if (pause.pauseMenu.activeSelf || ui.settingsMenu.activeSelf)
+        if (pause.pauseMenu.activeSelf || ui.settingsMenu.activeSelf || pm.winScreen.activeSelf)
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
