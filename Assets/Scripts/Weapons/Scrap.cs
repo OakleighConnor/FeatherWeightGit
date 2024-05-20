@@ -80,8 +80,6 @@ public class Scrap : MonoBehaviour
 
     void StateManager()
     {
-        
-
         if (state == State.charging)
         {
             ChargeScrap();
@@ -95,12 +93,11 @@ public class Scrap : MonoBehaviour
         {
             scrapCharge += Time.deltaTime * chargeSpeed * 10;
         }
-        damage = scrapCharge;
-
-        if(scrapCharge > playerHealth.health)
+        else
         {
             scrapCharge = playerHealth.health - 1;
         }
+        damage = scrapCharge;
 
         if(damage <= 1)
         {

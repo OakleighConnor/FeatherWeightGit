@@ -9,9 +9,6 @@ public class PlayerWeapons : MonoBehaviour
 
     public float maxBulletDistance = 30;
 
-
-
-
     [Header("References")]
     PlayerReferences playerRef;
     Gun gunScript;
@@ -241,7 +238,7 @@ public class PlayerWeapons : MonoBehaviour
         }
         if (Input.GetKeyUp(primaryKey))
         {
-            if (weapon == WeaponOut.scrap/* && playerRef.weight >= 0.3*/)
+            if (weapon == WeaponOut.scrap)
             {
                 playerRef.anim.SetBool("scrapCharge", false);
             }
