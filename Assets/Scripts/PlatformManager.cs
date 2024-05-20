@@ -219,6 +219,7 @@ public class PlatformManager : MonoBehaviour
         {
             arena5.SetActive(false);
         }
+
         // Checkpoint management
         if (levelPart == 1)
         {

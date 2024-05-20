@@ -47,7 +47,6 @@ public class UIButtons : MonoBehaviour
     {
         am = GetComponent<AudioManager>();
         am.PlaySFX(am.inputUI);
-        Debug.Log("Settings Toggled");
         settingsMenu = GameObject.FindGameObjectWithTag("Settings").transform.GetChild(0).gameObject;
 
         if (SceneManager.GetActiveScene().name == "TitleScreen")
