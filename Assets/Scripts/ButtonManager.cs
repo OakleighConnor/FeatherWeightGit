@@ -15,4 +15,8 @@ public class ButtonManager : MonoBehaviour
         ui = FindAnyObjectByType<UIButtons>();
         ui.ToggleSettings();
     }
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
 }
