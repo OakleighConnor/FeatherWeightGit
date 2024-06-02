@@ -60,9 +60,6 @@ public class Gun : MonoBehaviour
         am = FindAnyObjectByType<AudioManager>();
         am.PlaySFX(am.shoot);
         effects.ShootingSystem.Play();
-        Debug.Log(helper);
-        Debug.Log(cam);
-        Debug.Log(bulletSpread);
         Vector3 direction = helper.GetDirection(cam, bulletSpread);
 
         if (Physics.Raycast(cam.position, direction, out RaycastHit hit, shootDistance, shootable))

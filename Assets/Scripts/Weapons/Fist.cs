@@ -81,7 +81,6 @@ public class Fist : MonoBehaviour
     {
         helper = FindAnyObjectByType<HelperScript>();
 
-        Debug.Log("play animation");
         if (CompareTag("Player"))
         {
             interactable = playerRef.interactableLayers;
@@ -116,11 +115,9 @@ public class Fist : MonoBehaviour
 
         if (objectHit != null)
         {
-            Debug.Log(objectHit);
 
             if (objectHit.CompareTag("enemy"))
             {
-                Debug.Log("hit enemy");
                 fistHitbox = false;
                 enemyHealth = objectHit.GetComponentInParent<EnemyHealth>();
                 enemyHealth.Hit(helper.DamageDealt(objectHit, fistDamage, 2, playerRef.weight, enemyHealth.weight, objectHit.GetComponentInParent<EnemyReferences>()), true, true); // Bools are Enemy KB and Player KB
@@ -128,7 +125,6 @@ public class Fist : MonoBehaviour
             else if (objectHit.name == "PlayerObj")
             {
                 fistHitbox = false;
-                Debug.Log("Player has been punched");
 
                 enemyHealth = GetComponent<EnemyHealth>();
 

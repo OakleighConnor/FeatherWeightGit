@@ -49,6 +49,12 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(health <= 0)
+        {
+            health = 0;
+            Death();
+        }
+
         playerRef.weight = health / 100;
         playerRef.weight += 0.5f;
 
@@ -64,11 +70,6 @@ public class PlayerHealth : MonoBehaviour
     {
         float healthUI;
         healthUI = Mathf.Round(health / 250 * 100);
-
-        if (healthUI == 0)
-        {
-            healthUI = 1;
-        }
 
         // Health Percentage UI
         if (healthUI > 0)
@@ -135,16 +136,9 @@ public class PlayerHealth : MonoBehaviour
 
         health -= damageTaken;
 
-        if(health <= 0)
+        if (knockback)
         {
-            Death();
-        }
-        else
-        {
-            if (knockback)
-            {
-                helper.Knockback(playerRef.rb, enemyRef.cam, true, enemyHealth);
-            }
+            helper.Knockback(playerRef.rb, enemyRef.cam, true, enemyHealth);
         }
     }
 

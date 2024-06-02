@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class PlatformManager : MonoBehaviour
 {
+    bool inRange;
+
     [Header("Scripts")]
     BattleActivate battle;
     HelperScript helper;
@@ -113,6 +115,8 @@ public class PlatformManager : MonoBehaviour
         {
             LevelInfo();
         }
+
+        inRange = Vector3.Distance(currentCheckpoint.transform.position, player.transform.position) <= 5;
     }
     void LevelFinish()
     {
@@ -262,12 +266,14 @@ public class PlatformManager : MonoBehaviour
     }
     public void RespawnPlayer()
     {
+        player.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        
         scrap = GameObject.FindGameObjectsWithTag("scrap");
         foreach (GameObject target in scrap)
         Destroy(target);
+
         playerHealth.health = 125;
-        
-        player.transform.position = currentCheckpoint.transform.position;
+
         battling = false;
         enemiesRemaining = 0;
 
@@ -276,6 +282,28 @@ public class PlatformManager : MonoBehaviour
             currentBattle = null;
         }
 
-        Debug.Log("Player respawned at " + currentCheckpoint);
+        StartCoroutine(TeleportToRespawn(currentCheckpoint.transform.position));
+    }
+
+    public IEnumerator TeleportToRespawn(Vector3 checkpoint)
+    {
+        while (!inRange)
+        {
+            Debug.Log("Player object: " + player);
+            Debug.Log("Current checkpoint the player respawns at: " + currentCheckpoint);
+
+            player.transform.localPosition = checkpoint;
+
+            if (player.transform.position != checkpoint)
+            {
+                Debug.Log("Player did not respawn properly");
+            }
+            else
+            {
+                Debug.Log("Player respawned properly");
+            }
+
+            yield return null;
+        }
     }
 }

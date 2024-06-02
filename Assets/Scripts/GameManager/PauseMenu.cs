@@ -30,7 +30,6 @@ public class PauseMenu : MonoBehaviour
     void Update()
     {
         ui = FindAnyObjectByType<UIButtons>();
-        Debug.Log(pauseMenu);
         if (pauseMenu != null && !ui.settings)
         {
             if (pauseMenu.activeSelf)

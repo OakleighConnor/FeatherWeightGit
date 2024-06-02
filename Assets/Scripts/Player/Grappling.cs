@@ -38,6 +38,7 @@ public class Grappling : MonoBehaviour
     float grappleSpeed;
     public Vector3 direction;
 
+    public bool grappleSuccessful;
     public bool inRange;
     public bool returnRange;
 
@@ -136,6 +137,7 @@ public class Grappling : MonoBehaviour
             //state = GrapplingState.launching;
             //StartGrappling();
             playerRef.anim.SetBool("grappling", true);
+            GrappleTarget();
         }
 
         if (!Input.GetKey(grappleKey))
@@ -204,6 +206,13 @@ public class Grappling : MonoBehaviour
         }
     }
 
+    public void GrappleTarget()
+    {
+        // Divides the max distance that the player can grapple from by half of the weight.
+        currentMaxGrappleDistance = maxGrappleDistance / playerRef.weight;
+
+        grappleSuccessful = Physics.Raycast(cam.position, cam.forward, out hit, currentMaxGrappleDistance, whatIsGrappleable);
+    }
 
     public void StartGrappling()
     {
@@ -214,11 +223,8 @@ public class Grappling : MonoBehaviour
 
         if (grapplingCdTimer > 0) return;
 
-        // Divides the max distance that the player can grapple from by half of the weight.
-        currentMaxGrappleDistance = maxGrappleDistance / playerRef.weight;
-
         // Fires a raycast from the position of the camera forwards. If it is within the max grapple distance and it is something that can be grappled then the code activates
-        if(Physics.Raycast(cam.position, cam.forward, out hit, currentMaxGrappleDistance, whatIsGrappleable))
+        if(grappleSuccessful)
         {
             // Activates what should happen when the point connects correctly
             // Saves the location that was hit
