@@ -47,8 +47,8 @@ TagManager:
   - Enemy
   - Player
   - Death
-  - 
-  - 
+  - Spike
+  - NavMesh
   - 
   - 
   - 

@@ -223,6 +223,11 @@ public class Grappling : MonoBehaviour
 
         if (grapplingCdTimer > 0) return;
 
+        if(hit.point != null)
+        {
+            GrappleTarget();
+        }
+
         // Fires a raycast from the position of the camera forwards. If it is within the max grapple distance and it is something that can be grappled then the code activates
         if(grappleSuccessful)
         {
@@ -274,7 +279,7 @@ public class Grappling : MonoBehaviour
         {
             // If the grapple hits nothing
 
-            grapplePoint = cam.position + cam.forward * currentMaxGrappleDistance;
+            grapplePoint = cam.position + cam.forward * (currentMaxGrappleDistance - 1);
             hitObject = null;
 
             enemyGrappled = false;

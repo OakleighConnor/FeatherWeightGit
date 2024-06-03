@@ -182,7 +182,7 @@ MonoBehaviour:
   shootable:
     serializedVersion: 2
     m_Bits: 200
-  knockback: 1
+  knockback: 2
 --- !u!114 &8387410603436823433
 MonoBehaviour:
   m_ObjectHideFlags: 0
