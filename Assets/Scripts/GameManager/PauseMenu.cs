@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("Scripts")]
     public UIButtons ui;
+    public Win win;
 
     [Header("Pause Menu")]
     public GameObject pauseMenu;

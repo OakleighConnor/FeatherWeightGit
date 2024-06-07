@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Animator))]
 public class EnemyScript : MonoBehaviour
@@ -113,7 +114,7 @@ public class EnemyScript : MonoBehaviour
             knockbackTimer = 0;
         }
 
-        if(manager.enemiesRemaining == 0)
+        if(manager.enemiesRemaining == 0 && SceneManager.GetActiveScene().name != "Test Scene")
         {
             if (enemyHealth.smoke != null)
             {
@@ -153,10 +154,12 @@ public class EnemyScript : MonoBehaviour
             }
         }
 
-
-        if (state != MovementState.punching && enemyRef.navMesh.enabled == true)
+        if (SceneManager.GetActiveScene().name != "Test Scene")
         {
-            enemyRef.navMesh.isStopped = false;
+            if (state != MovementState.punching && enemyRef.navMesh.enabled == true)
+            {
+                enemyRef.navMesh.isStopped = false;
+            }
         }
     }
 
@@ -239,6 +242,8 @@ public class EnemyScript : MonoBehaviour
     }
     void Shooting()
     {
+
+        if (SceneManager.GetActiveScene().name == "Test Scene") return;
         // Start shooting
         if (!enemyRef.shooting && !enemyRef.punching)
         {
@@ -341,6 +346,7 @@ public class EnemyScript : MonoBehaviour
     }
     public void GrappleTowardsPlayer()
     {
+
         Vector3 direction = player.position - transform.position;
         direction.Normalize();
 

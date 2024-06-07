@@ -63,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
     AudioManager am;
     UIButtons ui;
     PlatformManager platform;
+    Win win;
 
     [Header("Dashing")]
     public float dashForce;
@@ -160,8 +161,23 @@ public class PlayerMovement : MonoBehaviour
 
     void UIInput()
     {
-        platform = FindAnyObjectByType<PlatformManager>();
-        if (Input.GetKeyDown(pauseKey) && !platform.winScreen.activeSelf)
+        win = GameObject.FindGameObjectWithTag("WinPortal").GetComponentInChildren<Win>();
+        if(win != null)
+        {
+            if (Input.GetKeyDown(pauseKey) && !win.winScreen.activeSelf)
+            {
+                ui = FindAnyObjectByType<UIButtons>();
+                if (ui.settingsMenu.activeSelf)
+                {
+                    ui.ToggleSettings();
+                }
+                else
+                {
+                    pauseMenuScript.TogglePause();
+                }
+            }
+        }
+        else if (Input.GetKeyDown(pauseKey))
         {
             ui = FindAnyObjectByType<UIButtons>();
             if (ui.settingsMenu.activeSelf)
@@ -480,6 +496,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.CompareTag("scrap"))
         {
+            am = FindAnyObjectByType<AudioManager>();
             am.PlaySFX(am.heal);
             Destroy(other.gameObject.transform.parent.gameObject);
             playerHealth = GetComponent<PlayerHealth>();

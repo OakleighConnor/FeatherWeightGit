@@ -8,6 +8,7 @@ public class UIButtons : MonoBehaviour
     [Header("Scripts")]
     AudioManager am;
     PauseMenu pm;
+    Tutorials tutorial;
 
     [Header("Settings")]
     public GameObject settingsMenu;
@@ -25,8 +26,14 @@ public class UIButtons : MonoBehaviour
     }
     public void ReloadScene()
     {
-        am = GetComponent<AudioManager>();
-        am.PlaySFX(am.inputUI);
+        // Reset the tutorials
+        tutorial = GetComponent<Tutorials>();
+        tutorial.healthSeen = false;
+        tutorial.grappleSeen = false;
+        tutorial.smokingSeen = false;
+
+        // Reload the scene and resume time
+        Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
     public void ChangeScene()

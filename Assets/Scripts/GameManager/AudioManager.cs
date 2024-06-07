@@ -6,9 +6,21 @@ using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
+    public bool battle;
+
+    [Header("Scripts")]
+    PlatformManager pm;
+
     [Header("Music")]
     public AudioClip title;
     public AudioClip level;
+    public AudioClip level2;
+    public AudioClip level3;
+
+    [Header("Music Manager")]
+    public AudioClip currentTrack;
+    public AudioClip targetTrack;
+    float targetTime;
 
     [Header("SFX")]
     // Combat :
@@ -37,9 +49,19 @@ public class AudioManager : MonoBehaviour
 
     GameObject settingsMenu;
 
+    public AudioTrack track;
+    public enum AudioTrack
+    {
+        title,
+        level1,
+        level2,
+        level3
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+
         if (PlayerPrefs.HasKey("musicVolume"))
         {
             LoadVolume();
@@ -60,7 +82,45 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        pm = FindAnyObjectByType<PlatformManager>();
+
+        if (pm != null)
+        {
+            if (pm.enemiesRemaining > 3)
+            {
+                targetTrack = level3;
+            }
+            else if (pm.enemiesRemaining != 0)
+            {
+                targetTrack = level2;
+            }
+            else
+            {
+                targetTrack = level;
+            }
+        }
+        else
+        {
+            targetTrack = title;
+        }
+
+        if(targetTrack != currentTrack)
+        {
+            // Sets the duration that the clip should play from
+            targetTime = musicSource.time;
+
+            // Plays the target track as well as the time that it should play from
+            musicSource.clip = targetTrack;
+            musicSource.Play();
+            musicSource.time = targetTime;
+        }
+
+        currentTrack = targetTrack;
+    }
+
+    public void RestartMusic()
+    {
+        musicSource.Play();
     }
 
     public void PlaySFX(AudioClip clip)

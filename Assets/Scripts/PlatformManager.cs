@@ -13,6 +13,8 @@ public class PlatformManager : MonoBehaviour
     HelperScript helper;
     Grappling grapple;
     PlayerHealth playerHealth;
+    AudioManager am;
+    CameraScript cam;
 
     [Header("References")]
     public GameObject player;
@@ -45,9 +47,7 @@ public class PlatformManager : MonoBehaviour
     public GameObject checkpoint3;
     public GameObject checkpoint4;
     public GameObject checkpoint5;
-
-    [Header("UI")]
-    public GameObject winScreen;
+    public GameObject winPortal;
 
     // Start is called before the first frame update
     void Start()
@@ -59,18 +59,18 @@ public class PlatformManager : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player");
         playerHealth = player.GetComponent<PlayerHealth>();
-        grapple = player.GetComponent<Grappling>();
+        grapple = GameObject.FindGameObjectWithTag("Player").GetComponent<Grappling>();
 
         // Assigning all platforms that are used in the levels
 
         // Passive platforms
         spawnPlatform = GameObject.FindGameObjectWithTag("Spawn");
 
-        transition1 = GameObject.FindGameObjectWithTag("T1").transform.root.gameObject;
-        transition2 = GameObject.FindGameObjectWithTag("T2").transform.root.gameObject;
-        transition3 = GameObject.FindGameObjectWithTag("T3").transform.root.gameObject;
-        transition4 = GameObject.FindGameObjectWithTag("T4").transform.root.gameObject;
-        transition5 = GameObject.FindGameObjectWithTag("T5").transform.root.gameObject;
+        transition1 = GameObject.FindGameObjectWithTag("T1").gameObject;
+        transition2 = GameObject.FindGameObjectWithTag("T2").gameObject;
+        transition3 = GameObject.FindGameObjectWithTag("T3").gameObject;
+        transition4 = GameObject.FindGameObjectWithTag("T4").gameObject;
+        transition5 = GameObject.FindGameObjectWithTag("T5").gameObject;
 
         // Combat platforms
         arena1 = GameObject.FindGameObjectWithTag("A1");
@@ -85,6 +85,7 @@ public class PlatformManager : MonoBehaviour
         checkpoint3 = GameObject.FindGameObjectWithTag("C3");
         checkpoint4 = GameObject.FindGameObjectWithTag("C4");
         checkpoint5 = GameObject.FindGameObjectWithTag("C5");
+        winPortal = GameObject.FindGameObjectWithTag("WinPortal").transform.GetChild(0).gameObject;
 
         // Sets all of the platforms to false except the platform the player first spawns on to prevent the player skipping through the level
         spawnPlatform.SetActive(true);
@@ -97,10 +98,7 @@ public class PlatformManager : MonoBehaviour
         arena4.SetActive(false);
         arena5.SetActive(false);
 
-        // UI
-
-        winScreen = GameObject.FindGameObjectWithTag("Win").transform.GetChild(0).gameObject;
-        winScreen.SetActive(false);
+        winPortal.SetActive(false);
     }
 
     // Update is called once per frame
@@ -109,7 +107,7 @@ public class PlatformManager : MonoBehaviour
         // If enemies are alive then battling is set to true
         if (levelPart == 6)
         {
-            LevelFinish();
+            winPortal.SetActive(true);
         }
         else
         {
@@ -117,11 +115,6 @@ public class PlatformManager : MonoBehaviour
         }
 
         inRange = Vector3.Distance(currentCheckpoint.transform.position, player.transform.position) <= 5;
-    }
-    void LevelFinish()
-    {
-        winScreen = GameObject.FindGameObjectWithTag("Win").transform.GetChild(0).gameObject;
-        winScreen.SetActive(true);
     }
     public void LevelInfo()
     {
@@ -224,6 +217,7 @@ public class PlatformManager : MonoBehaviour
             arena5.SetActive(false);
         }
 
+
         // Checkpoint management
         if (levelPart == 1)
         {
@@ -266,18 +260,26 @@ public class PlatformManager : MonoBehaviour
     }
     public void RespawnPlayer()
     {
+        cam = FindAnyObjectByType<CameraScript>();
+        cam.RespawnCamera();
+    }
+
+    public void TeleportToSpawn()
+    {
+        am = FindFirstObjectByType<AudioManager>();
+        am.RestartMusic();
         player.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        
+
         scrap = GameObject.FindGameObjectsWithTag("scrap");
         foreach (GameObject target in scrap)
-        Destroy(target);
+            Destroy(target);
 
         playerHealth.health = 125;
 
         battling = false;
         enemiesRemaining = 0;
 
-        if(currentBattle != null)
+        if (currentBattle != null)
         {
             currentBattle = null;
         }

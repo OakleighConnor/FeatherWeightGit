@@ -2990,7 +2990,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd876381df59fc24fb2fea74c7c1bcdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 800
+  playerCamera: {fileID: 0}
+  originalCameraSpeed: 10
+  helper: {fileID: 0}
+  pause: {fileID: 0}
+  win: {fileID: 0}
+  ui: {fileID: 0}
+  pm: {fileID: 0}
+  sensitivity: 50
   orientation: {fileID: 2130962386752211157}
 --- !u!1 &3888200657762785485
 GameObject:
@@ -6487,6 +6494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ui: {fileID: 0}
+  win: {fileID: 0}
   pauseMenu: {fileID: 0}
   paused: 0
   HUD: {fileID: 0}

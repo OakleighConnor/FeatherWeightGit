@@ -12,7 +12,6 @@ TagManager:
   - ParticleSystem
   - scrap
   - collectable
-  - BattleA
   - T1
   - T2
   - T3
@@ -37,6 +36,9 @@ TagManager:
   - Settings
   - TitleScreen
   - Win
+  - SensitivitySlider
+  - WinPortal
+  - EndGame
   layers:
   - Default
   - TransparentFX
@@ -49,7 +51,7 @@ TagManager:
   - Death
   - Spike
   - NavMesh
-  - 
+  - Portal
   - 
   - 
   - 

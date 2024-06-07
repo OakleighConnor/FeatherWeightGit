@@ -7,6 +7,7 @@ public class PlayerPlatformInteraction : MonoBehaviour
     [Header("Script")]
     public BattleActivate battle;
     PlatformManager manager;
+    Win win;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +22,12 @@ public class PlayerPlatformInteraction : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Death"))
+        if (other.CompareTag("EndGame"))
+        {
+            win = other.GetComponent<Win>();
+            win.WinScreen();
+        }
+        else if (other.CompareTag("Death"))
         {
             Debug.Log("Kill the player");
 

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class HelperScript : MonoBehaviour
 {
@@ -25,6 +27,14 @@ public class HelperScript : MonoBehaviour
     public float knockback;
     float originalKnockback;
 
+
+    [Header("Sliders")]
+    public Slider sensivitiySlider;
+    public float sensitivity;
+
+    [Header("UI")]
+    public Win win;
+
     void Awake()
     {
         if(instance != null)
@@ -40,6 +50,15 @@ public class HelperScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (PlayerPrefs.HasKey("sensitivity"))
+        {
+            LoadSensitivity();
+        }
+        else
+        {
+            SetMouseSensitivity();
+        }
+
         weapon = FindAnyObjectByType<PlayerWeapons>();
         player = GameObject.FindWithTag("Player");
 
@@ -51,7 +70,23 @@ public class HelperScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (SceneManager.GetActiveScene().name == "1-1" && win == null)
+        {
+            win = GameObject.FindGameObjectWithTag("WinPortal").transform.GetChild(0).transform.GetChild(0).GetComponent<Win>();
+        }
+    }
 
+
+    public void SetMouseSensitivity()
+    {
+        sensitivity = sensivitiySlider.value * 10;
+        PlayerPrefs.SetFloat("sensitivity", sensitivity);
+    }
+    public void LoadSensitivity()
+    {
+        sensivitiySlider.value = PlayerPrefs.GetFloat("sensitivity");
+
+        SetMouseSensitivity();
     }
 
     public Vector3 GetDirection(Transform cam, bool BulletSpread)
@@ -184,7 +219,7 @@ public class HelperScript : MonoBehaviour
         }
         else if (rb.CompareTag("enemy"))
         {
-            knockback *= 2f;
+            knockback *= 1.5f;
             rb.gameObject.transform.position = new Vector3(rb.gameObject.transform.position.x, rb.gameObject.transform.position.y + 0.5f, rb.gameObject.transform.position.z);
             rb.mass = 0.5f;
             Debug.Log("EnemyTakeDamage");

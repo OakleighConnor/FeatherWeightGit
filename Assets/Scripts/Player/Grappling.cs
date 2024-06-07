@@ -223,7 +223,7 @@ public class Grappling : MonoBehaviour
 
         if (grapplingCdTimer > 0) return;
 
-        if(hit.point != null)
+        if(hit.point == null)
         {
             GrappleTarget();
         }

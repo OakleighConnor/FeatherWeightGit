@@ -12,6 +12,7 @@ public class EnemyHealth : MonoBehaviour
     EnemyHealth healthScript;
     PlatformManager manager;
     AudioManager am;
+    Tutorials tutorial;
 
     [Header("References")]
     public GameObject hitbox;
@@ -51,6 +52,8 @@ public class EnemyHealth : MonoBehaviour
         helper = FindAnyObjectByType<HelperScript>();
         am = FindAnyObjectByType<AudioManager>();
 
+        tutorial = FindAnyObjectByType<Tutorials>();
+
         // Variable assignment
         health = Random.Range(150, 250);
         kb = false;
@@ -84,6 +87,7 @@ public class EnemyHealth : MonoBehaviour
         {
             if (lighter)
             {
+                tutorial.PlayTutorial(tutorial.smoking);
                 smoke = Instantiate(pm.smoke);
                 smoke.transform.rotation = Quaternion.Euler(-90, 0, 0);
             }
