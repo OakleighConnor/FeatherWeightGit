@@ -239,7 +239,7 @@ MonoBehaviour:
   shootable:
     serializedVersion: 2
     m_Bits: 200
-  knockback: 4
+  knockback: 2
   sensivitiySlider: {fileID: 4247930159081563776}
   sensitivity: 10
   win: {fileID: 0}
