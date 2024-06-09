@@ -84,6 +84,7 @@ public class CameraScript : MonoBehaviour
     
     public void RespawnCamera()
     {
+        playerCamera.fieldOfView = 60;
         cameraSpeed = originalCameraSpeed;
         StartCoroutine(RespawnFOV(playerCamera.fieldOfView));
     }
@@ -95,7 +96,7 @@ public class CameraScript : MonoBehaviour
         while (zoomOut)
         {
             playerCamera.fieldOfView += Time.deltaTime * cameraSpeed;
-            cameraSpeed *= 1.2f;
+            cameraSpeed += cameraSpeed/10;
             zoomOut = playerCamera.fieldOfView < 170;
             yield return null;
         }
@@ -114,7 +115,7 @@ public class CameraScript : MonoBehaviour
         while (zoomIn)
         {
             playerCamera.fieldOfView -= Time.deltaTime * cameraSpeed;
-            cameraSpeed /= 1.2f;
+            cameraSpeed -= cameraSpeed/10;
             zoomIn = playerCamera.fieldOfView > 60;
 
             if(playerCamera.fieldOfView < fov)

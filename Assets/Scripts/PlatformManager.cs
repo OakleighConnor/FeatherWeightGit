@@ -235,7 +235,7 @@ public class PlatformManager : MonoBehaviour
         {
             currentCheckpoint = checkpoint4;
         }
-        else if (levelPart == 5)
+        else if (levelPart == 5 || levelPart == 6)
         {
             currentCheckpoint = checkpoint5;
         }
@@ -258,6 +258,7 @@ public class PlatformManager : MonoBehaviour
             levelPart++;
         }
     }
+
     public void RespawnPlayer()
     {
         cam = FindAnyObjectByType<CameraScript>();

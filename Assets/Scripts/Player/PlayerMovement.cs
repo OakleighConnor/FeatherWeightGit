@@ -64,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
     UIButtons ui;
     PlatformManager platform;
     Win win;
+    Tutorials tutorial;
 
     [Header("Dashing")]
     public float dashForce;
@@ -161,6 +162,9 @@ public class PlayerMovement : MonoBehaviour
 
     void UIInput()
     {
+        tutorial = FindAnyObjectByType<Tutorials>();
+        if(tutorial.currentTutorial != null) return;
+        
         win = GameObject.FindGameObjectWithTag("WinPortal").GetComponentInChildren<Win>();
         if(win != null)
         {

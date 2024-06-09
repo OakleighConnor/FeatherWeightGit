@@ -8,7 +8,7 @@ public class UIButtons : MonoBehaviour
     [Header("Scripts")]
     AudioManager am;
     PauseMenu pm;
-    Tutorials tutorial;
+    public Tutorials tutorial;
 
     [Header("Settings")]
     public GameObject settingsMenu;
@@ -19,22 +19,24 @@ public class UIButtons : MonoBehaviour
     {
         settingsMenu = GameObject.FindGameObjectWithTag("Settings").transform.GetChild(0).gameObject;
         settingsMenu.SetActive(false);
+        tutorial = FindAnyObjectByType<Tutorials>();
     }
+
     private void Update()
     {
         settingsMenu = GameObject.FindGameObjectWithTag("Settings").transform.GetChild(0).gameObject;
     }
+
     public void ReloadScene()
     {
-        // Reset the tutorials
-        tutorial = GetComponent<Tutorials>();
-        tutorial.healthSeen = false;
-        tutorial.grappleSeen = false;
-        tutorial.smokingSeen = false;
+        tutorial = FindAnyObjectByType<Tutorials>();
+        tutorial.RestartSeenTutorials();
 
         // Reload the scene and resume time
         Time.timeScale = 1;
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        
     }
     public void ChangeScene()
     {

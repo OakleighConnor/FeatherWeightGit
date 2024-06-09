@@ -1,41 +1,53 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Tutorials : MonoBehaviour
 {
     [Header("Tutorial UI")]
     public GameObject health;
     public bool healthSeen;
-    public GameObject grapple;
-    public bool grappleSeen;
+    public GameObject controls;
+    public bool controlsSeen;
     public GameObject smoking;
     public bool smokingSeen;
+    public GameObject scrap;
+    public bool scrapSeen;
     public GameObject currentTutorial;
-
 
     // Start is called before the first frame update
     void Start()
     {
-        //health.SetActive(false);
-        //grapple.SetActive(false);
-        smoking.SetActive(false);
+        RestartSeenTutorials();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(currentTutorial != null && Input.GetKeyDown(KeyCode.E))
+        if(!controlsSeen && SceneManager.GetActiveScene().name != "TitleScreen")
         {
-            CloseTutorial();
+            controls.SetActive(true);
+            currentTutorial = controls;
+        }
+
+        if(currentTutorial != null)
+        {
+            Time.timeScale = 0;
+
+            if(Input.GetKeyDown(KeyCode.E))
+            {
+                CloseTutorial();
+            }
         }
     }
 
     public void PlayTutorial(GameObject tutorial)
     {
         if (tutorial == health && healthSeen == true) return;
-        else if (tutorial == grapple && grappleSeen == true) return;
+        else if (tutorial == controls && controlsSeen == true) return;
         else if (tutorial == smoking && smokingSeen == true) return;
+        else if (tutorial == scrap && scrapSeen == true) return;
         else if (tutorial.activeSelf) return;
 
         Time.timeScale = 0;
@@ -52,16 +64,31 @@ public class Tutorials : MonoBehaviour
         if (currentTutorial == health)
         {
             healthSeen = true;
+            currentTutorial = null;
         }
-        else if (currentTutorial == grapple)
+        else if (currentTutorial == controls)
         {
-            grappleSeen = true;
+            controlsSeen = true;
+            PlayTutorial(health);
         }
         else if (currentTutorial == smoking)
         {
             smokingSeen = true;
+            currentTutorial = null;
+        }
+        else if (currentTutorial == scrap)
+        {
+            scrapSeen = true;
+            currentTutorial = null;
         }
 
-        currentTutorial = null;
+    }
+
+    public void RestartSeenTutorials()
+    {
+        healthSeen = false;
+        controlsSeen = false;
+        smokingSeen = false;
+        scrapSeen = false;
     }
 }

@@ -2991,7 +2991,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 0}
-  originalCameraSpeed: 10
+  originalCameraSpeed: 1
   helper: {fileID: 0}
   pause: {fileID: 0}
   win: {fileID: 0}

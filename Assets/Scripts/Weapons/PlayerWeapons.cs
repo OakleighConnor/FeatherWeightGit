@@ -14,6 +14,7 @@ public class PlayerWeapons : MonoBehaviour
     Gun gunScript;
     Fist fistScript;
     Scrap scrapScript;
+    Tutorials tutorial;
     public ParticleSystem ShootingSystem;
     public Transform BulletShootPoint;
     public ParticleSystem ImpactSystem;
@@ -141,6 +142,13 @@ public class PlayerWeapons : MonoBehaviour
         // Scrap
         if (weaponValue == 3)
         {
+            tutorial = FindAnyObjectByType<Tutorials>();
+
+            if(!tutorial.scrapSeen)
+            {
+                tutorial.PlayTutorial(tutorial.scrap);
+            }
+
             if(scrapScript.state != Scrap.State.throwing)
             {
                 scrap.SetActive(true);
@@ -172,6 +180,8 @@ public class PlayerWeapons : MonoBehaviour
 
     void Inputs()
     {
+        if(Time.timeScale == 0) return;
+
         // Scroll wheel input :
 
         weaponValue += Input.mouseScrollDelta.y;

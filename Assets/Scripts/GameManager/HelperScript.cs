@@ -13,6 +13,7 @@ public class HelperScript : MonoBehaviour
     EnemyReferences enemyRef;
     Grappling grapple;
     PlayerWeapons weapon;
+    Tutorials tutorial;
 
     [Header("Bullet")]
     public float bulletSpread;
@@ -37,6 +38,10 @@ public class HelperScript : MonoBehaviour
 
     void Awake()
     {
+        tutorial = FindAnyObjectByType<Tutorials>();
+
+        tutorial.RestartSeenTutorials();
+
         if(instance != null)
         {
             Destroy(gameObject);
