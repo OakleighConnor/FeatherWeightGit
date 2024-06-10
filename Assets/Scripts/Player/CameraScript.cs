@@ -25,6 +25,8 @@ public class CameraScript : MonoBehaviour
     float xRotation;
     float yRotation;
 
+    bool respawning;
+
     public GameObject winScreen;
     // Start is called before the first frame update
     void Start()
@@ -89,6 +91,9 @@ public class CameraScript : MonoBehaviour
     
     public void RespawnCamera()
     {
+        if (respawning) return;
+        respawning = true;
+
         playerCamera.fieldOfView = 60;
         cameraSpeed = originalCameraSpeed;
         StopAllCoroutines();
@@ -132,5 +137,6 @@ public class CameraScript : MonoBehaviour
         }
 
         cameraSpeed = originalCameraSpeed;
+        respawning = false;
     }
 }

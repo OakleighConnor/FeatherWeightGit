@@ -261,7 +261,9 @@ public class PlatformManager : MonoBehaviour
 
     public void RespawnPlayer()
     {
+        Debug.Log("Player being respawned");
         cam = FindAnyObjectByType<CameraScript>();
+        Debug.Log(cam);
         cam.RespawnCamera();
     }
 

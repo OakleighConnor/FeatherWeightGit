@@ -219,7 +219,7 @@ MonoBehaviour:
   shootable:
     serializedVersion: 2
     m_Bits: 200
-  knockback: 2
+  knockback: 3
   sensivitiySlider: {fileID: 4247930159081563776}
   sensitivity: 10
   win: {fileID: 0}
@@ -602,7 +602,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.002172172
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -2789,10 +2789,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 9174982168775797454}
   m_HandleRect: {fileID: 4768203662743406458}
   m_Direction: 0
-  m_MinValue: 0.1
-  m_MaxValue: 100
+  m_MinValue: 1
+  m_MaxValue: 1500
   m_WholeNumbers: 0
-  m_Value: 0.317
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

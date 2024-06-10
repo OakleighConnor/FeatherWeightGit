@@ -188,7 +188,8 @@ public class HelperScript : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Player took " + " damage");
+        Debug.Log("Player took " + damage + " damage");
+        Debug.Log(playerRef.KB);
         return damage;
     }
 

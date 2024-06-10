@@ -138,6 +138,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (knockback)
         {
+            helper = FindAnyObjectByType<HelperScript>();
             helper.Knockback(playerRef.rb, enemyRef.cam, true, enemyHealth);
         }
     }
