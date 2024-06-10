@@ -29,13 +29,14 @@ public class UIButtons : MonoBehaviour
 
     public void ReloadScene()
     {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
         tutorial = FindAnyObjectByType<Tutorials>();
         tutorial.RestartSeenTutorials();
 
         // Reload the scene and resume time
         Time.timeScale = 1;
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         
     }
     public void ChangeScene()

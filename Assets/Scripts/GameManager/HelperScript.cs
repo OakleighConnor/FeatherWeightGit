@@ -38,9 +38,6 @@ public class HelperScript : MonoBehaviour
 
     void Awake()
     {
-        tutorial = FindAnyObjectByType<Tutorials>();
-
-        tutorial.RestartSeenTutorials();
 
         if(instance != null)
         {
@@ -75,20 +72,18 @@ public class HelperScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (SceneManager.GetActiveScene().name == "1-1" && win == null)
-        {
-            win = GameObject.FindGameObjectWithTag("WinPortal").transform.GetChild(0).transform.GetChild(0).GetComponent<Win>();
-        }
+
     }
 
 
     public void SetMouseSensitivity()
     {
-        sensitivity = sensivitiySlider.value * 10;
         PlayerPrefs.SetFloat("sensitivity", sensitivity);
+        sensitivity = sensivitiySlider.value;
     }
     public void LoadSensitivity()
     {
+        
         sensivitiySlider.value = PlayerPrefs.GetFloat("sensitivity");
 
         SetMouseSensitivity();

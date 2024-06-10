@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraScript : MonoBehaviour
 {
+
     [Header("Camera")]
     public Camera playerCamera;
     public float originalCameraSpeed;
@@ -12,7 +13,6 @@ public class CameraScript : MonoBehaviour
     [Header("Scripts")]
     public HelperScript helper;
     public PauseMenu pause;
-    public Win win;
     public UIButtons ui;
     public PlatformManager pm;
 
@@ -25,9 +25,11 @@ public class CameraScript : MonoBehaviour
     float xRotation;
     float yRotation;
 
+    public GameObject winScreen;
     // Start is called before the first frame update
     void Start()
     {
+
         playerCamera = GetComponent<Camera>();
 
         helper = FindAnyObjectByType<HelperScript>();
@@ -40,12 +42,14 @@ public class CameraScript : MonoBehaviour
 
         sensX = sensitivity;
         sensY = sensitivity;
-        sensitivity *= 10;
+
+        winScreen.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+        helper = FindAnyObjectByType<HelperScript>();
         sensitivity = helper.sensitivity;
         sensX = sensitivity;
         sensY = sensitivity;
@@ -55,7 +59,7 @@ public class CameraScript : MonoBehaviour
 
         if(ui.settingsMenu != null)
         {
-            if (pause.pauseMenu.activeSelf || ui.settingsMenu.activeSelf || win.winScreen.activeSelf)
+            if (pause.pauseMenu.activeSelf || ui.settingsMenu.activeSelf || winScreen.activeSelf)
             {
                 Cursor.visible = true;
                 Cursor.lockState = CursorLockMode.None;
@@ -66,6 +70,7 @@ public class CameraScript : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
                 CameraMovement();
             }
+
         }
     }
 
@@ -86,6 +91,7 @@ public class CameraScript : MonoBehaviour
     {
         playerCamera.fieldOfView = 60;
         cameraSpeed = originalCameraSpeed;
+        StopAllCoroutines();
         StartCoroutine(RespawnFOV(playerCamera.fieldOfView));
     }
 

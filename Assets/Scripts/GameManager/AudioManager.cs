@@ -135,14 +135,12 @@ public class AudioManager : MonoBehaviour
 
     public void SetMusicVolume()
     {
-        musicSlider = GameObject.FindGameObjectWithTag("MusicSlider").GetComponent<Slider>();
         float volume = musicSlider.value;
         audioMixer.SetFloat("music", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("musicVolume", volume);
     }
     public void SetSFXVolume()
     {
-        musicSlider = GameObject.FindGameObjectWithTag("SFXSlider").GetComponent<Slider>();
         float volume = sfxSlider.value;
         audioMixer.SetFloat("sfx", Mathf.Log10(volume) * 20);
         PlayerPrefs.SetFloat("sfxVolume", volume);

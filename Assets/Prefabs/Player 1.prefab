@@ -2994,11 +2994,11 @@ MonoBehaviour:
   originalCameraSpeed: 1
   helper: {fileID: 0}
   pause: {fileID: 0}
-  win: {fileID: 0}
   ui: {fileID: 0}
   pm: {fileID: 0}
   sensitivity: 50
   orientation: {fileID: 2130962386752211157}
+  winScreen: {fileID: 3396113080123123968}
 --- !u!1 &3888200657762785485
 GameObject:
   m_ObjectHideFlags: 0

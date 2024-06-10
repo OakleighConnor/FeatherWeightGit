@@ -107,6 +107,7 @@ public class PlatformManager : MonoBehaviour
         // If enemies are alive then battling is set to true
         if (levelPart == 6)
         {
+            transition5.SetActive(true);
             winPortal.SetActive(true);
         }
         else
@@ -165,7 +166,7 @@ public class PlatformManager : MonoBehaviour
             {
                 transition4.SetActive(true);
             }
-            else if (levelPart == 5)
+            else if (levelPart == 5 || levelPart == 6)
             {
                 transition5.SetActive(true);
             }
@@ -208,7 +209,7 @@ public class PlatformManager : MonoBehaviour
             arena4.SetActive(false);
         }
 
-        if (levelPart == 5 || levelPart == 6)
+        if (levelPart == 5)
         {
             arena5.SetActive(true);
         }
@@ -254,7 +255,6 @@ public class PlatformManager : MonoBehaviour
             battling = false;
             currentBattle.battleComplete = true;
             currentBattle = null;
-            Debug.Log("Battle Complete!");
             levelPart++;
         }
     }
